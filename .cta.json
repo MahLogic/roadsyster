@@ -1,0 +1,25 @@
+{
+  "initialized": true,
+  "mode": "file-router",
+  "projectName": "roadsyster",
+  "typescript": true,
+  "tailwind": true,
+  "git": true,
+  "addOnOptions": {
+    "drizzle": {
+      "database": "postgresql"
+    }
+  },
+  "packageManager": "bun",
+  "version": 1,
+  "framework": "react-cra",
+  "chosenAddOns": [
+    "compiler",
+    "drizzle",
+    "shadcn",
+    "t3env",
+    "start",
+    "eslint",
+    "nitro"
+  ]
+}
