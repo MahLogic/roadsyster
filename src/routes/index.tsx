@@ -1,118 +1,634 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import {
-  Zap,
-  Server,
-  Route as RouteIcon,
-  Shield,
-  Waves,
-  Sparkles,
+  ArrowRight,
+  Boxes,
+  Calendar,
+  CheckCircle2,
+  Code2,
+  DollarSign,
+  FileText,
+  Users,
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { WaitlistDialog } from '@/components/landing/waitlist'
+import { Navigation } from '@/components/navigation'
+import { GitHub } from '@/components/icons/icons'
 
 export const Route = createFileRoute('/')({ component: App })
 
 function App() {
-  const features = [
-    {
-      icon: <Zap className="w-12 h-12 text-cyan-400" />,
-      title: 'Powerful Server Functions',
-      description:
-        'Write server-side code that seamlessly integrates with your client components. Type-safe, secure, and simple.',
-    },
-    {
-      icon: <Server className="w-12 h-12 text-cyan-400" />,
-      title: 'Flexible Server Side Rendering',
-      description:
-        'Full-document SSR, streaming, and progressive enhancement out of the box. Control exactly what renders where.',
-    },
-    {
-      icon: <RouteIcon className="w-12 h-12 text-cyan-400" />,
-      title: 'API Routes',
-      description:
-        'Build type-safe API endpoints alongside your application. No separate backend needed.',
-    },
-    {
-      icon: <Shield className="w-12 h-12 text-cyan-400" />,
-      title: 'Strongly Typed Everything',
-      description:
-        'End-to-end type safety from server to client. Catch errors before they reach production.',
-    },
-    {
-      icon: <Waves className="w-12 h-12 text-cyan-400" />,
-      title: 'Full Streaming Support',
-      description:
-        'Stream data from server to client progressively. Perfect for AI applications and real-time updates.',
-    },
-    {
-      icon: <Sparkles className="w-12 h-12 text-cyan-400" />,
-      title: 'Next Generation Ready',
-      description:
-        'Built from the ground up for modern web applications. Deploy anywhere JavaScript runs.',
-    },
-  ]
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
-      <section className="relative py-20 px-6 text-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10"></div>
-        <div className="relative max-w-5xl mx-auto">
-          <div className="flex items-center justify-center gap-6 mb-6">
-            <img
-              src="/tanstack-circle-logo.png"
-              alt="TanStack Logo"
-              className="w-24 h-24 md:w-32 md:h-32"
-            />
-            <h1 className="text-6xl md:text-7xl font-black text-white [letter-spacing:-0.08em]">
-              <span className="text-gray-300">TANSTACK</span>{' '}
-              <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                START
-              </span>
-            </h1>
-          </div>
-          <p className="text-2xl md:text-3xl text-gray-300 mb-4 font-light">
-            The framework for next generation AI applications
-          </p>
-          <p className="text-lg text-gray-400 max-w-3xl mx-auto mb-8">
-            Full-stack framework powered by TanStack Router for React and Solid.
-            Build modern applications with server functions, streaming, and type
-            safety.
-          </p>
-          <div className="flex flex-col items-center gap-4">
-            <a
-              href="https://tanstack.com/start"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-lg transition-colors shadow-lg shadow-cyan-500/50"
-            >
-              Documentation
-            </a>
-            <p className="text-gray-400 text-sm mt-2">
-              Begin your TanStack Start journey by editing{' '}
-              <code className="px-2 py-1 bg-slate-700 rounded text-cyan-400">
-                /src/routes/index.tsx
-              </code>
-            </p>
-          </div>
-        </div>
-      </section>
+    <div className="min-h-screen">
+      <Navigation />
 
-      <section className="py-16 px-6 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:border-cyan-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10"
-            >
-              <div className="mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-gray-400 leading-relaxed">
-                {feature.description}
+      <main>
+        <section className="py-20 md:py-32 px-4">
+          <div className="container mx-auto max-w-5xl">
+            <div className="text-center space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted text-sm">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-foreground opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-foreground"></span>
+                </span>
+                Work in Progress
+              </div>
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-balance">
+                Manage your freelance business in one place
+              </h1>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto text-pretty leading-relaxed">
+                Track clients, invoices, and proposals in one centralized
+                dashboard. Built for independent freelancers who need simple,
+                powerful tools.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <WaitlistDialog>
+                  <Button size="lg" className="w-full sm:w-auto">
+                    Join the Waitlist <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </WaitlistDialog>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full sm:w-auto bg-transparent"
+                  asChild
+                >
+                  <Link to="/github" target="_blank" rel="noopener noreferrer">
+                    <GitHub className="mr-2 h-4 w-4 fill-white" /> View on
+                    GitHub
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-20 px-4 bg-muted/30">
+          <div className="container mx-auto max-w-4xl">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-balance">
+              The freelancer struggle is real
+            </h2>
+            <p className="text-lg text-muted-foreground text-center mb-12 text-pretty leading-relaxed">
+              You spend more time managing tools than doing the work you love.
+              Switching between spreadsheets, invoice generators, and email
+              threads wastes hours every week.
+            </p>
+            <div className="grid md:grid-cols-3 gap-6">
+              <Card className="p-6 space-y-3">
+                <div className="h-12 w-12 rounded-lg bg-destructive/10 flex items-center justify-center">
+                  <span className="text-2xl">⏱️</span>
+                </div>
+                <h3 className="font-semibold">
+                  Time lost to context switching
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Bouncing between different apps breaks your focus and slows
+                  you down.
+                </p>
+              </Card>
+              <Card className="p-6 space-y-3">
+                <div className="h-12 w-12 rounded-lg bg-destructive/10 flex items-center justify-center">
+                  <span className="text-2xl">💸</span>
+                </div>
+                <h3 className="font-semibold">Money left on the table</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Missed invoices and forgotten follow-ups mean lost revenue.
+                </p>
+              </Card>
+              <Card className="p-6 space-y-3">
+                <div className="h-12 w-12 rounded-lg bg-destructive/10 flex items-center justify-center">
+                  <span className="text-2xl">😓</span>
+                </div>
+                <h3 className="font-semibold">Admin work burnout</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  You became a freelancer to do great work, not endless
+                  paperwork.
+                </p>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-20 px-4">
+          <div className="container mx-auto max-w-5xl">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-balance">
+                Everything you need, nothing you don't
+              </h2>
+              <p className="text-lg text-muted-foreground text-pretty leading-relaxed">
+                RoadSyster replaces fragmented tools with one unified dashboard
+                designed for how you actually work.
               </p>
             </div>
-          ))}
+            <div className="grid md:grid-cols-2 gap-8">
+              <Card className="p-8 space-y-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Calendar className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold">
+                  Work & Schedule Organization
+                </h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  See all your projects, deadlines, and tasks in one place.
+                  Never miss a deliverable or double-book yourself again.
+                </p>
+              </Card>
+              <Card className="p-8 space-y-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Users className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold">
+                  Client & Relationship Management
+                </h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Keep track of client details, communication history, and
+                  project notes. Build stronger relationships with better
+                  context.
+                </p>
+              </Card>
+              <Card className="p-8 space-y-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <DollarSign className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold">Financial Management</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Create invoices, track payments, and monitor your income.
+                  Simple financial tools that help you get paid faster.
+                </p>
+              </Card>
+              <Card className="p-8 space-y-4">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <FileText className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold">Proposal Management</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Build and send professional proposals quickly. Track status
+                  and follow up at the right time to win more work.
+                </p>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        <section id="features" className="py-20 px-4 bg-muted/30">
+          <div className="container mx-auto max-w-4xl">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-balance">
+              Real outcomes, not feature lists
+            </h2>
+            <p className="text-lg text-muted-foreground text-center mb-12 text-pretty leading-relaxed">
+              Every feature exists to solve a real problem you face every day.
+            </p>
+            <div className="space-y-4">
+              <div className="flex items-start gap-4">
+                <CheckCircle2 className="h-6 w-6 text-primary shrink-0 mt-1" />
+                <div>
+                  <h3 className="font-semibold mb-1">
+                    Spend less time on admin
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Automated reminders, templates, and workflows cut down
+                    repetitive tasks.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <CheckCircle2 className="h-6 w-6 text-primary shrink-0 mt-1" />
+                <div>
+                  <h3 className="font-semibold mb-1">Get paid consistently</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Invoice tracking and payment reminders ensure nothing falls
+                    through the cracks.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <CheckCircle2 className="h-6 w-6 text-primary shrink-0 mt-1" />
+                <div>
+                  <h3 className="font-semibold mb-1">
+                    Understand your business
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    See where your time goes, who your best clients are, and how
+                    your income trends.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <CheckCircle2 className="h-6 w-6 text-primary shrink-0 mt-1" />
+                <div>
+                  <h3 className="font-semibold mb-1">
+                    Easy tech stack management
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Track the tools and technologies you use across projects
+                    without manual spreadsheets.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-20 px-4">
+          <div className="container mx-auto max-w-5xl">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <h2 className="text-3xl md:text-4xl font-bold text-balance">
+                  Built by MahLogic Solutions
+                </h2>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  RoadSyster is currently built and maintained by a solo
+                  developer who understands the freelance life firsthand.
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  This is not a venture-backed startup rushing to scale. It's a
+                  focused tool built by someone who uses it, for people who need
+                  it. Development happens deliberately, with attention to the
+                  details that matter.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                  <Button variant="outline">
+                    <Code2 className="mr-2 h-4 w-4" /> Learn More
+                  </Button>
+                </div>
+              </div>
+              <Card className="p-8 bg-muted/50">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Users className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <div className="font-semibold">
+                        Independent & Sustainable
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Built for the long term
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <div className="font-semibold">Freelancer-First</div>
+                      <div className="text-sm text-muted-foreground">
+                        Built by a developer, for everyone
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Calendar className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <div className="font-semibold">
+                        Thoughtful Development
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Quality over speed
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        <section id="open-source" className="py-20 px-4 bg-muted/30">
+          <div className="container mx-auto max-w-4xl">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-balance">
+                Open source, built in public
+              </h2>
+              <p className="text-lg text-muted-foreground text-pretty leading-relaxed">
+                RoadSyster is licensed under AGPL-3.0, which means you can see
+                exactly how it works.
+              </p>
+            </div>
+            <Card className="p-8 md:p-12">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">
+                    What AGPL-3.0 means for you
+                  </h3>
+                  <ul className="space-y-3">
+                    <li className="flex items-start gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                      <span className="text-muted-foreground leading-relaxed">
+                        You can view, modify, and run the code for personal or
+                        commercial use
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                      <span className="text-muted-foreground leading-relaxed">
+                        If you modify and distribute it, you must share your
+                        changes under the same license
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                      <span className="text-muted-foreground leading-relaxed">
+                        The code is transparent and auditable by anyone
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+                <div className="pt-4">
+                  <Button
+                    variant="outline"
+                    className="w-full sm:w-auto bg-transparent"
+                  >
+                    <GitHub className="mr-2 h-4 w-4" /> Explore the Code
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </section>
+
+        <section id="support" className="py-20 px-4">
+          <div className="container mx-auto max-w-4xl">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-balance">
+                Support independent development
+              </h2>
+              <p className="text-lg text-muted-foreground text-pretty leading-relaxed">
+                Building and maintaining RoadSyster takes time, effort, and
+                resources.
+              </p>
+            </div>
+            <Card className="p-8 md:p-12">
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold">Why donations help</h3>
+                  <ul className="space-y-3">
+                    <li className="flex items-start gap-3">
+                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <span className="text-xs font-semibold text-primary">
+                          1
+                        </span>
+                      </div>
+                      <span className="text-muted-foreground leading-relaxed">
+                        Cover hosting and infrastructure costs
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <span className="text-xs font-semibold text-primary">
+                          2
+                        </span>
+                      </div>
+                      <span className="text-muted-foreground leading-relaxed">
+                        Support ongoing development time
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <span className="text-xs font-semibold text-primary">
+                          3
+                        </span>
+                      </div>
+                      <span className="text-muted-foreground leading-relaxed">
+                        Keep the project sustainable and independent
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+                <div className="flex flex-col justify-center space-y-4">
+                  <p className="text-muted-foreground leading-relaxed">
+                    Every contribution, no matter the size, helps keep this
+                    project alive and growing. Your support means this tool can
+                    stay focused on what freelancers actually need.
+                  </p>
+                  <Button className="w-full sm:w-auto" asChild>
+                    <Link to="/donate/paypal">Support via PayPal</Link>
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </section>
+
+        <section className="py-20 px-4 bg-muted/30">
+          <div className="container mx-auto max-w-4xl">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-balance">
+                What's the status?
+              </h2>
+              <p className="text-lg text-muted-foreground text-pretty leading-relaxed">
+                RoadSyster is actively being built. Here's what exists now and
+                what's coming.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-8">
+              <Card className="p-8">
+                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-primary" />
+                  Available Now
+                </h3>
+                <ul className="space-y-3 text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary">•</span>
+                    <span className="leading-relaxed">
+                      Core project structure and architecture
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary">•</span>
+                    <span className="leading-relaxed">
+                      Basic client management features
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary">•</span>
+                    <span className="leading-relaxed">
+                      Open-source repository on GitHub
+                    </span>
+                  </li>
+                </ul>
+              </Card>
+              <Card className="p-8">
+                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-muted-foreground" />
+                  Coming Soon
+                </h3>
+                <ul className="space-y-3 text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <span className="text-muted-foreground">•</span>
+                    <span className="leading-relaxed">
+                      Invoice generation and tracking
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-muted-foreground">•</span>
+                    <span className="leading-relaxed">
+                      Proposal builder and templates
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-muted-foreground">•</span>
+                    <span className="leading-relaxed">
+                      Schedule and task management
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-muted-foreground">•</span>
+                    <span className="leading-relaxed">
+                      Financial reporting and insights
+                    </span>
+                  </li>
+                </ul>
+              </Card>
+            </div>
+            <div className="mt-8 text-center">
+              <p className="text-muted-foreground leading-relaxed">
+                Join the waitlist to get updates as features launch and be among
+                the first to try RoadSyster.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-20 px-4">
+          <div className="container mx-auto max-w-3xl text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-balance">
+              Ready to simplify your freelance business?
+            </h2>
+            <p className="text-lg text-muted-foreground mb-8 text-pretty leading-relaxed">
+              Join the waitlist to be notified when RoadSyster launches. No
+              spam, just updates on progress and early access.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <WaitlistDialog>
+                <Button size="lg" className="w-full sm:w-auto">
+                  Join the Waitlist <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </WaitlistDialog>
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full sm:w-auto bg-transparent"
+                asChild
+              >
+                <Link to="/github" target="_blank" rel="noopener noreferrer">
+                  <GitHub className="mr-2 h-4 w-4 fill-white" /> Star on GitHub
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t border-border py-12 px-4">
+        <div className="container mx-auto max-w-7xl">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Boxes className="h-5 w-5" />
+                <span className="font-semibold">RoadSyster</span>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Business management for independent freelancers. Built by
+                MahLogic Solutions.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Product</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <a
+                    href="#features"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Features
+                  </a>
+                </li>
+                <li>
+                  <Link
+                    to="/"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Roadmap
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/contributors"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Contributors
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Resources</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <Link
+                    to="/privacy"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/terms"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/license"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    License
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Connect</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <Link
+                    to="/"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    GitHub
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Twitter
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Contact
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground">
+            <p>© 2025 MahLogic Solutions. Licensed under AGPL-3.0.</p>
+          </div>
         </div>
-      </section>
+      </footer>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
 
-export const todos = pgTable('todos', {
+export const waitlist = pgTable('waitlist', {
   id: serial().primaryKey(),
-  title: text().notNull(),
+  email: text().notNull().unique(),
   createdAt: timestamp('created_at').defaultNow(),
 })
