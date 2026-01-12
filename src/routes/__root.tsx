@@ -2,7 +2,7 @@ import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
+import { Analytics } from '@vercel/analytics/next'
 import appCss from '../styles.css?url'
 import { Toaster } from '@/components/ui/sonner'
 
@@ -49,6 +49,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <MainLayout>{children}</MainLayout>
+        <Analytics />
         <TanStackDevtools
           config={{
             position: 'bottom-right',
