@@ -16,6 +16,7 @@ import { Route as GithubRouteImport } from './routes/github'
 import { Route as ContributorsRouteImport } from './routes/contributors'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ShareWhatsappRouteImport } from './routes/share.whatsapp'
 import { Route as DonatePaypalRouteImport } from './routes/donate.paypal'
 
 const TermsRoute = TermsRouteImport.update({
@@ -53,6 +54,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShareWhatsappRoute = ShareWhatsappRouteImport.update({
+  id: '/share/whatsapp',
+  path: '/share/whatsapp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DonatePaypalRoute = DonatePaypalRouteImport.update({
   id: '/donate/paypal',
   path: '/donate/paypal',
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/donate/paypal': typeof DonatePaypalRoute
+  '/share/whatsapp': typeof ShareWhatsappRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/donate/paypal': typeof DonatePaypalRoute
+  '/share/whatsapp': typeof ShareWhatsappRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/donate/paypal': typeof DonatePaypalRoute
+  '/share/whatsapp': typeof ShareWhatsappRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/donate/paypal'
+    | '/share/whatsapp'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/donate/paypal'
+    | '/share/whatsapp'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/donate/paypal'
+    | '/share/whatsapp'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
   DonatePaypalRoute: typeof DonatePaypalRoute
+  ShareWhatsappRoute: typeof ShareWhatsappRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -185,6 +198,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/share/whatsapp': {
+      id: '/share/whatsapp'
+      path: '/share/whatsapp'
+      fullPath: '/share/whatsapp'
+      preLoaderRoute: typeof ShareWhatsappRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/donate/paypal': {
       id: '/donate/paypal'
       path: '/donate/paypal'
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
   DonatePaypalRoute: DonatePaypalRoute,
+  ShareWhatsappRoute: ShareWhatsappRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

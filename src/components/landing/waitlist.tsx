@@ -1,6 +1,7 @@
 import { useServerFn } from '@tanstack/react-start'
 import { useState } from 'react'
 import { AlertCircle, Check, Loader2, Mail } from 'lucide-react'
+import { WhatsAppShareButton } from './whatsapp-share-btn'
 import type React from 'react'
 import { Button } from '@/components/ui/button'
 import {
@@ -139,7 +140,9 @@ function WaitlistDialog({ children }: WaitlistDialogProps) {
           <Button onClick={resetForm} className="w-full">
             Try again
           </Button>
-        ) : null}
+        ) : (
+          <WhatsAppShareButton>Share on WhatsApp</WhatsAppShareButton>
+        )}
 
         {formState === 'idle' && (
           <p className="text-center text-xs text-muted-foreground">
