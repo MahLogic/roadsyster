@@ -17,6 +17,7 @@
     "check": "prettier --write . && eslint --fix"
   },
   "devDependencies": {
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vinxi": "latest"
   }
 }
