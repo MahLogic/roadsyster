@@ -3,9 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite dev --port 3000",
-    "build": "vite build",
-    "preview": "vite preview",
+    "dev": "vinxi dev --port 3000",
+    "build": "vinxi build",
+    "preview": "vinxi preview",
     "test": "vitest run"
   },
   "dependencies": {

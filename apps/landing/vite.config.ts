@@ -7,6 +7,13 @@ import tailwindcss from '@tailwindcss/vite'
 import { nitro } from 'nitro/vite'
 
 const config = defineConfig({
+  server: {
+    preset: 'vercel',
+    prerender: {
+      routes: ['/'],
+      crawlLinks: true,
+    },
+  },
   plugins: [
     devtools(),
     nitro(),
