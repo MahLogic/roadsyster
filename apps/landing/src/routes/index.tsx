@@ -413,7 +413,88 @@ function App() {
           </div>
         </section>
 
-        <section className="py-20 px-4 bg-muted/30">
+        <section id="zaio" className="py-20 px-4 bg-muted/30">
+          <div className="container mx-auto max-w-5xl">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-balance">
+                Level up your tech career with ZAIO
+              </h2>
+              <p className="text-lg text-muted-foreground text-pretty leading-relaxed max-w-2xl mx-auto">
+                Whether you're starting out or leveling up, ZAIO offers
+                industry-recognized bootcamps and certifications to help you
+                break into tech.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              <Card className="p-6 space-y-3">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Code2 className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-semibold">
+                  Fullstack AI Engineer Bootcamp
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Master AI-powered development with cutting-edge tools and
+                  frameworks to build intelligent applications.
+                </p>
+              </Card>
+              <Card className="p-6 space-y-3">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Boxes className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-semibold">Fullstack Bootcamp</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Learn frontend and backend development from scratch and become
+                  a job-ready fullstack developer.
+                </p>
+              </Card>
+              <Card className="p-6 space-y-3">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <FileText className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-semibold">Data Science Bootcamp</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Dive into data analysis, machine learning, and visualization
+                  to unlock insights from data.
+                </p>
+              </Card>
+              <Card className="p-6 space-y-3">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <CheckCircle2 className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-semibold">Cybersecurity Bootcamp</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Protect systems and networks with hands-on training in ethical
+                  hacking and security practices.
+                </p>
+              </Card>
+              <Card className="p-6 space-y-3 md:col-span-2 lg:col-span-2">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Users className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-semibold">Occupational Certificates</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Earn recognized credentials in Software Development,
+                  Cybersecurity, or Data Science to validate your skills and
+                  boost your career prospects.
+                </p>
+              </Card>
+            </div>
+            <div className="text-center">
+              <Button size="lg" asChild>
+                <Link to="/zaio" target="_blank" rel="noopener noreferrer">
+                  Explore ZAIO Programs <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <p className="text-sm text-muted-foreground mt-4">
+                Use our referral link to support RoadSyster while investing in
+                your future.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-20 px-4">
           <div className="container mx-auto max-w-4xl">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-balance">
@@ -493,7 +574,7 @@ function App() {
           </div>
         </section>
 
-        <section className="py-20 px-4">
+        <section className="py-20 px-4 bg-muted/30">
           <div className="container mx-auto max-w-3xl text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-balance">
               Ready to simplify your freelance business?

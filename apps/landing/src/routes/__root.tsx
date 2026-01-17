@@ -19,6 +19,11 @@ export const Route = createRootRoute({
       {
         title: 'RoadSyster',
       },
+      {
+        name: 'description',
+        content:
+          'Open-source CRM for freelancers. Manage clients, track projects, send invoices & monitor finances. Free plan available. Start today.',
+      },
     ],
     links: [
       {

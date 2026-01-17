@@ -28,6 +28,13 @@ import { Navigation, REPOSITORY } from '@/components/navigation'
 
 export const Route = createFileRoute('/contributors')({
   component: RouteComponent,
+  head: () => ({
+    meta: [
+      {
+        title: 'RoadSyster - contributors',
+      },
+    ],
+  }),
 })
 
 export interface Contributor {

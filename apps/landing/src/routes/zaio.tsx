@@ -1,9 +1,9 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/donate/paypal')({
+export const Route = createFileRoute('/zaio')({
   loader: () => {
     throw redirect({
-      href: 'https://www.paypal.com/donate/?hosted_button_id=58MNE48RYW3AQ',
+      href: `https://applications.zaio.io/?referral=AWWRF4`,
       code: 308,
     })
   },

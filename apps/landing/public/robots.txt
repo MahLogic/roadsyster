@@ -1,0 +1,25 @@
+# https://www.robotstxt.org/robotstxt.html
+# robots.txt for RoadSyster
+
+User-agent: *
+Allow: /
+
+# Public pages
+Allow: /contributors
+Allow: /github
+Allow: /donate/paypal
+Allow: /privacy
+Allow: /terms
+Allow: /license
+
+Disallow: /share
+
+# Allow GitHub and social media crawlers
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+# Sitemap location
+Sitemap: https://roadsyster.com/sitemap.xml

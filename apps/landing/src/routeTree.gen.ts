@@ -9,16 +9,21 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ZaioRouteImport } from './routes/zaio'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LicenseRouteImport } from './routes/license'
 import { Route as GithubRouteImport } from './routes/github'
 import { Route as ContributorsRouteImport } from './routes/contributors'
-import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShareWhatsappRouteImport } from './routes/share.whatsapp'
 import { Route as DonatePaypalRouteImport } from './routes/donate.paypal'
 
+const ZaioRoute = ZaioRouteImport.update({
+  id: '/zaio',
+  path: '/zaio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -44,11 +49,6 @@ const ContributorsRoute = ContributorsRouteImport.update({
   path: '/contributors',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -67,35 +67,35 @@ const DonatePaypalRoute = DonatePaypalRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
   '/contributors': typeof ContributorsRoute
   '/github': typeof GithubRoute
   '/license': typeof LicenseRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/zaio': typeof ZaioRoute
   '/donate/paypal': typeof DonatePaypalRoute
   '/share/whatsapp': typeof ShareWhatsappRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
   '/contributors': typeof ContributorsRoute
   '/github': typeof GithubRoute
   '/license': typeof LicenseRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/zaio': typeof ZaioRoute
   '/donate/paypal': typeof DonatePaypalRoute
   '/share/whatsapp': typeof ShareWhatsappRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
   '/contributors': typeof ContributorsRoute
   '/github': typeof GithubRoute
   '/license': typeof LicenseRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
+  '/zaio': typeof ZaioRoute
   '/donate/paypal': typeof DonatePaypalRoute
   '/share/whatsapp': typeof ShareWhatsappRoute
 }
@@ -103,52 +103,59 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/auth'
     | '/contributors'
     | '/github'
     | '/license'
     | '/privacy'
     | '/terms'
+    | '/zaio'
     | '/donate/paypal'
     | '/share/whatsapp'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/auth'
     | '/contributors'
     | '/github'
     | '/license'
     | '/privacy'
     | '/terms'
+    | '/zaio'
     | '/donate/paypal'
     | '/share/whatsapp'
   id:
     | '__root__'
     | '/'
-    | '/auth'
     | '/contributors'
     | '/github'
     | '/license'
     | '/privacy'
     | '/terms'
+    | '/zaio'
     | '/donate/paypal'
     | '/share/whatsapp'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthRoute: typeof AuthRoute
   ContributorsRoute: typeof ContributorsRoute
   GithubRoute: typeof GithubRoute
   LicenseRoute: typeof LicenseRoute
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
+  ZaioRoute: typeof ZaioRoute
   DonatePaypalRoute: typeof DonatePaypalRoute
   ShareWhatsappRoute: typeof ShareWhatsappRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/zaio': {
+      id: '/zaio'
+      path: '/zaio'
+      fullPath: '/zaio'
+      preLoaderRoute: typeof ZaioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -184,13 +191,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContributorsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -217,12 +217,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthRoute: AuthRoute,
   ContributorsRoute: ContributorsRoute,
   GithubRoute: GithubRoute,
   LicenseRoute: LicenseRoute,
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
+  ZaioRoute: ZaioRoute,
   DonatePaypalRoute: DonatePaypalRoute,
   ShareWhatsappRoute: ShareWhatsappRoute,
 }

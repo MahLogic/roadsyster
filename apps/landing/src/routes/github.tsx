@@ -7,4 +7,11 @@ export const Route = createFileRoute('/github')({
       code: 308,
     })
   },
+  head: () => ({
+    meta: [
+      {
+        title: 'Check out RoadSyster on GitHub',
+      },
+    ],
+  }),
 })

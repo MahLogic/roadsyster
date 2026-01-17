@@ -45,10 +45,10 @@ export function Navigation() {
   return (
     <header className="border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/6 sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between max-w-7xl">
-        <div className="flex items-center gap-2">
+        <Link className="flex items-center gap-2" to="/">
           <Boxes className="h-6 w-6" />
           <span className="text-xl font-semibold">RoadSyster</span>
-        </div>
+        </Link>
         <nav className="hidden md:flex items-center gap-6">
           <a
             href="#features"
@@ -67,6 +67,12 @@ export function Navigation() {
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             Support
+          </a>
+          <a
+            href="#zaio"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            ZAIO
           </a>
           <div className="flex gap-2">
             <Link
