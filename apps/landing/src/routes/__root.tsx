@@ -3,6 +3,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 import appCss from '../styles.css?url'
 import { Toaster } from '@/components/ui/sonner'
 
@@ -55,6 +56,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <MainLayout>{children}</MainLayout>
         <Analytics />
+        <SpeedInsights />
         <TanStackDevtools
           config={{
             position: 'bottom-right',
