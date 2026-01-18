@@ -1,11 +1,18 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "tui",
+  "pipeline": {
+    "@roadsyster/web#build": {
+      "dependsOn": ["^build"],
+      "outputs": [".output/**", "dist/**", ".vinxi/**"],
+      "env": ["DATABASE_URL"]
+    }
+  },
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [".output/**", "dist/**", ".vinxi/**"]
     },
     "lint": {
       "dependsOn": ["^lint"]
