@@ -38,6 +38,7 @@ import {
   type ActivityData,
 } from "@/lib/contributors-config";
 import { Globe } from "feather-icons-react";
+import { Navigation } from "@/components/navigation";
 
 export const Route = createFileRoute("/contributors")({
   component: RouteComponent,
@@ -343,6 +344,7 @@ function RouteComponent() {
   return (
     <div className="min-h-screen w-full bg-white text-black dark:bg-neutral-950 dark:text-white">
       <div className="container mx-auto max-w-6xl px-4 py-8">
+        <Navigation />
         {/* Project Stats */}
         <div className="mb-8 overflow-hidden rounded-xl border bg-gradient-to-b from-white/50 to-white/10 p-6 backdrop-blur-sm dark:border-neutral-700 dark:from-neutral-900/50 dark:to-neutral-900/30">
           <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
