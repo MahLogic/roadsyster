@@ -2,22 +2,19 @@
   "name": "roadsyster",
   "private": true,
   "scripts": {
-    "dev": "pnpm run --parallel dev",
-    "dev:landing": "pnpm --filter @roadsyster/landing dev",
-    "dev:frontend": "pnpm --filter @roadsyster/frontend dev",
-    "dev:backend": "pnpm --filter @roadsyster/backend dev",
-    "build": "pnpm run --recursive build",
-    "clean": "pnpm run --recursive clean",
-    "docker:db:up": "docker compose -f docker-compose.db.yaml up -d",
-    "docker:db:stop": "docker compose -f docker-compose.db.yaml stop",
-    "docker:db:down": "docker compose -f docker-compose.db.yaml down",
-    "docker:db:clean": "docker compose -f docker-compose.db.yaml down -v",
-    "lint": "eslint",
-    "format": "prettier",
-    "check": "prettier --write . && eslint --fix"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "check-types": "turbo run check-types"
   },
   "devDependencies": {
-    "typescript": "^5.3.3",
-    "vinxi": "latest"
+    "prettier": "^3.7.4",
+    "turbo": "^2.7.5",
+    "typescript": "5.9.2"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=18"
   }
 }
