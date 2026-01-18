@@ -1,6 +1,14 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import {
+  Github,
+  Star,
+  GitFork,
+  MessageCircle,
+  GitGraph,
+  ApertureIcon as ChartAreaIcon,
+  GitPullRequest,
+  LayoutGrid,
+} from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -11,57 +19,42 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import {
-  Box,
-  GitCommit,
-  GitPullRequest,
-  Github,
-  MessageCircle,
-  Star,
-} from "feather-icons-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Discord, Twitter } from "@/components/icons";
 import { Separator } from "@/components/ui/separator";
+import { useEffect, useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Navigation, REPOSITORY } from "@/components/navigation";
+import {
+  REPOSITORY,
+  EXCLUDED_USERNAMES,
+  CORE_TEAM_MEMBERS,
+  PROJECT_INFO,
+  type Contributor,
+  type RepoStats,
+  type TimelineData,
+  type ActivityData,
+} from "@/lib/contributors-config";
+import { Globe } from "feather-icons-react";
 
 export const Route = createFileRoute("/contributors")({
   component: RouteComponent,
 });
 
-export interface Contributor {
-  login: string;
-  avatar_url: string;
-  contributions: number;
-  html_url: string;
-}
+const excludedUsernamesSet = new Set(EXCLUDED_USERNAMES);
+const coreTeamUsernames = CORE_TEAM_MEMBERS.map((m) =>
+  m.username.toLowerCase(),
+);
 
-export interface TimelineData {
-  date: string;
-  stars: number;
-  forks: number;
-  watchers: number;
-  commits: number;
-}
-
-export interface ActivityData {
-  date: string;
-  commits: number;
-  issues: number;
-  pullRequests: number;
-}
-
-const excludedUsernames = new Set([
-  "dependabot",
-  "github-actions",
-  "autofix-ci[bot]",
-]);
-
-// const specialRoles: Record<
-//   string,
-//   { role: string; position: number; x?: string; website?: string }
-// > = {}
+const specialRoles = CORE_TEAM_MEMBERS.reduce(
+  (acc, member) => {
+    acc[member.username.toLowerCase()] = member;
+    return acc;
+  },
+  {} as Record<string, (typeof CORE_TEAM_MEMBERS)[0]>,
+);
 
 const ChartControls = ({
   showAll,
@@ -88,42 +81,51 @@ const ChartControls = ({
 );
 
 function RouteComponent() {
-  const [repoStats, setRepoStats] = useState({
+  const [repoStats, setRepoStats] = useState<RepoStats>({
     stars: 0,
     forks: 0,
     watchers: 0,
     openIssues: 0,
     openPRs: 0,
   });
-  const [timelineData, setTimelineData] = useState<Array<TimelineData>>([]);
-  const [activityData, setActivityData] = useState<Array<ActivityData>>([]);
+  const [timelineData, setTimelineData] = useState<TimelineData[]>([]);
+  const [activityData, setActivityData] = useState<ActivityData[]>([]);
   const [showAllContributors, setShowAllContributors] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [allContributors, setAllContributors] = useState<Array<Contributor>>(
-    [],
-  );
+  const [allContributors, setAllContributors] = useState<Contributor[]>([]);
 
   const { data: initialContributors } = useQuery({
-    queryFn: () =>
-      fetch(
+    queryFn: async () => {
+      const res = await fetch(
         `https://api.github.com/repos/${REPOSITORY}/contributors?per_page=100&page=1`,
-      ).then((res) => res.json()) as Promise<Array<Contributor>>,
+      );
+      const data = await res.json();
+      // GitHub API returns an array for contributors, but may return an object with "message" on error
+      return Array.isArray(data) ? data : [];
+    },
     queryKey: ["contributors", REPOSITORY],
   });
 
   const { data: additionalContributors } = useQuery({
-    queryFn: () =>
-      fetch(
+    queryFn: async () => {
+      const res = await fetch(
         `https://api.github.com/repos/${REPOSITORY}/contributors?per_page=100&page=2`,
-      ).then((res) => res.json()) as Promise<Array<Contributor>>,
+      );
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    },
     queryKey: ["additional-contributors", REPOSITORY],
-    enabled: initialContributors && initialContributors.length === 100,
+    enabled:
+      Array.isArray(initialContributors) && initialContributors.length === 100,
   });
 
   useEffect(() => {
-    if (initialContributors) {
-      if (additionalContributors) {
+    if (Array.isArray(initialContributors)) {
+      if (
+        Array.isArray(additionalContributors) &&
+        additionalContributors.length > 0
+      ) {
         setAllContributors([...initialContributors, ...additionalContributors]);
       } else {
         setAllContributors(initialContributors);
@@ -133,79 +135,107 @@ function RouteComponent() {
 
   const { data: repoData, error: repoError } = useQuery({
     queryFn: () =>
-      fetch(`https://api.github.com/repos/${REPOSITORY}`).then((res) =>
-        res.json(),
+      fetch(`https://api.github.com/repos/${REPOSITORY}`).then(
+        (res) => res.json() as Promise<Record<string, number>>,
       ),
     queryKey: ["repo-data", REPOSITORY],
   });
 
   const { data: commitsData, error: commitsError } = useQuery({
-    queryFn: () =>
-      fetch(
+    queryFn: async () => {
+      const res = await fetch(
         `https://api.github.com/repos/${REPOSITORY}/commits?per_page=100`,
-      ).then((res) => res.json()),
+      );
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    },
     queryKey: ["commits-data", REPOSITORY],
   });
 
   const { data: prsData, error: prsError } = useQuery({
-    queryFn: () =>
-      fetch(`https://api.github.com/repos/${REPOSITORY}/pulls?state=open`).then(
-        (res) => res.json(),
-      ),
+    queryFn: async () => {
+      const res = await fetch(
+        `https://api.github.com/repos/${REPOSITORY}/pulls?state=open`,
+      );
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    },
     queryKey: ["prs-data", REPOSITORY],
   });
 
-  const filteredContributors = allContributors
-    .filter((contributor) => !excludedUsernames.has(contributor.login))
-    .sort((a, b) => b.contributions - a.contributions);
+  const filteredCoreTeam = useMemo(() => {
+    return allContributors
+      ?.filter(
+        (contributor) =>
+          !excludedUsernamesSet.has(contributor.login) &&
+          coreTeamUsernames.includes(contributor.login.toLowerCase()),
+      )
+      .sort((a, b) => {
+        const positionA = specialRoles[a.login.toLowerCase()]?.position || 999;
+        const positionB = specialRoles[b.login.toLowerCase()]?.position || 999;
+        return positionA - positionB;
+      });
+  }, [allContributors]);
+
+  const filteredContributors = useMemo(
+    () =>
+      allContributors
+        ?.filter(
+          (contributor) =>
+            !excludedUsernamesSet.has(contributor.login) &&
+            !coreTeamUsernames.includes(contributor.login.toLowerCase()),
+        )
+        .sort((a, b) => b.contributions - a.contributions),
+    [allContributors],
+  );
 
   useEffect(() => {
+    const generateFallbackData = () => {
+      const last30Days = Array.from({ length: 30 }, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - (29 - i));
+        return {
+          date: date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          }),
+          stars: Math.floor(Math.random() * 100),
+          forks: Math.floor(Math.random() * 50),
+          watchers: Math.floor(Math.random() * 30),
+          commits: Math.floor(Math.random() * 10),
+        };
+      });
+
+      const last7Days = Array.from({ length: 7 }, (_, i) => {
+        const date = new Date();
+        const today = date.getDay();
+        const daysToSubtract = today + (6 - i);
+        date.setDate(date.getDate() - daysToSubtract);
+
+        const commits = Math.floor(Math.random() * 8) + 2;
+        return {
+          date: date.toLocaleDateString("en-US", { weekday: "short" }),
+          commits,
+          issues: Math.max(1, Math.floor(commits * 0.3)),
+          pullRequests: Math.max(1, Math.floor(commits * 0.2)),
+        };
+      });
+
+      setTimelineData(last30Days);
+      setActivityData(last7Days);
+    };
     if (repoError || commitsError || prsError) {
       setError(
-        repoError?.message ||
-          commitsError?.message ||
-          prsError?.message ||
+        (repoError as Error)?.message ||
+          (commitsError as Error)?.message ||
+          (prsError as Error)?.message ||
           "An error occurred while fetching data",
       );
-      const generateFallbackData = () => {
-        const last30Days = Array.from({ length: 30 }, (_, i) => {
-          const date = new Date();
-          date.setDate(date.getDate() - (29 - i));
-          return {
-            date: date.toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-            }),
-            stars: Math.floor(Math.random() * 100),
-            forks: Math.floor(Math.random() * 50),
-            watchers: Math.floor(Math.random() * 30),
-            commits: Math.floor(Math.random() * 10),
-          };
-        });
-
-        const last7Days = Array.from({ length: 7 }, (_, i) => {
-          const date = new Date();
-          const today = date.getDay();
-          const daysToSubtract = today + (6 - i);
-          date.setDate(date.getDate() - daysToSubtract);
-
-          const commits = Math.floor(Math.random() * 8) + 2;
-          return {
-            date: date.toLocaleDateString("en-US", { weekday: "short" }),
-            commits,
-            issues: Math.max(1, Math.floor(commits * 0.3)),
-            pullRequests: Math.max(1, Math.floor(commits * 0.2)),
-          };
-        });
-
-        setTimelineData(last30Days);
-        setActivityData(last7Days);
-      };
       generateFallbackData();
       return;
     }
 
-    if (!repoData || !commitsData || !prsData) {
+    if (!repoData || !Array.isArray(commitsData) || !Array.isArray(prsData)) {
       setIsLoading(true);
       return;
     }
@@ -214,10 +244,10 @@ function RouteComponent() {
     setError(null);
 
     setRepoStats({
-      stars: repoData.stargazers_count,
-      forks: repoData.forks_count,
-      watchers: repoData.subscribers_count,
-      openIssues: repoData.open_issues_count - prsData.length,
+      stars: repoData.stargazers_count || 0,
+      forks: repoData.forks_count || 0,
+      watchers: repoData.subscribers_count || 0,
+      openIssues: repoData.open_issues_count || 0 - prsData.length,
       openPRs: prsData.length,
     });
 
@@ -228,7 +258,7 @@ function RouteComponent() {
 
       const dayCommits = commitsData.filter(
         (commit: { commit: { author: { date: string } } }) =>
-          commit.commit.author.date.startsWith(dateStr || ""),
+          commit.commit.author.date.startsWith(dateStr ?? ""),
       ).length;
 
       const dayIndex = i + 1;
@@ -239,9 +269,9 @@ function RouteComponent() {
           month: "short",
           day: "numeric",
         }),
-        stars: Math.floor(repoData.stargazers_count * growthFactor),
-        forks: Math.floor(repoData.forks_count * growthFactor),
-        watchers: Math.floor(repoData.subscribers_count * growthFactor),
+        stars: Math.floor(repoData.stargazers_count || 0 * growthFactor),
+        forks: Math.floor(repoData.forks_count || 0 * growthFactor),
+        watchers: Math.floor(repoData.subscribers_count || 0 * growthFactor),
         commits: dayCommits || Math.floor(Math.random() * 5),
       };
     });
@@ -258,7 +288,7 @@ function RouteComponent() {
 
       const dayCommits = commitsData.filter(
         (commit: { commit: { author: { date: string } } }) =>
-          commit.commit.author.date.startsWith(dateStr || ""),
+          commit.commit.author.date.startsWith(dateStr ?? ""),
       ).length;
 
       const commits = dayCommits || Math.floor(Math.random() * 5) + 1;
@@ -276,21 +306,22 @@ function RouteComponent() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <div className="flex min-h-100 items-center justify-center">
-          <div className="text-center">
-            <h3 className="text-lg font-medium">Something went wrong</h3>
-            <p className="mt-2 text-sm text-muted-foreground">{error}</p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => window.location.reload()}
-              className="mt-4"
-            >
-              Try again
-            </Button>
-          </div>
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-center">
+          <h3 className="text-lg font-medium text-neutral-900 dark:text-white">
+            Something went wrong
+          </h3>
+          <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+            {error}
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => window.location.reload()}
+            className="mt-4"
+          >
+            Try again
+          </Button>
         </div>
       </div>
     );
@@ -298,38 +329,42 @@ function RouteComponent() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <div className="flex min-h-screen w-full items-center justify-center">
-          <div className="text-center">
-            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
-            <p className="mt-2 text-sm text-muted-foreground">
-              Loading data...
-            </p>
-          </div>
+      <div className="flex min-h-screen w-full items-center justify-center bg-white dark:bg-neutral-950">
+        <div className="text-center">
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-neutral-900 border-t-transparent dark:border-white dark:border-t-transparent" />
+          <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+            Loading data...
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-
+    <div className="min-h-screen w-full bg-white text-black dark:bg-neutral-950 dark:text-white">
       <div className="container mx-auto max-w-6xl px-4 py-8">
-        <div className="mb-8 overflow-hidden rounded-xl border p-6">
+        {/* Project Stats */}
+        <div className="mb-8 overflow-hidden rounded-xl border bg-gradient-to-b from-white/50 to-white/10 p-6 backdrop-blur-sm dark:border-neutral-700 dark:from-neutral-900/50 dark:to-neutral-900/30">
           <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <Link to="/">
-                  <div className="flex items-center gap-2">
-                    <Box className="h-8 w-8" />
-                    <span className="text-2xl font-bold">RoadSyster</span>
+                <a href="/">
+                  <div className="relative h-8 w-8">
+                    <img
+                      src={PROJECT_INFO.lightLogo || "/placeholder.svg"}
+                      alt={`${PROJECT_INFO.name} Logo`}
+                      className="object-contain dark:hidden"
+                    />
+                    <img
+                      src={PROJECT_INFO.darkLogo || "/placeholder.svg"}
+                      alt={`${PROJECT_INFO.name} Logo`}
+                      className="hidden object-contain dark:block"
+                    />
                   </div>
-                </Link>
+                </a>
               </div>
-              <p className="text-sm text-muted-foreground">
-                Open source business management for freelancers
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                {PROJECT_INFO.description}
               </p>
             </div>
             <div className="flex gap-2">
@@ -337,7 +372,7 @@ function RouteComponent() {
                 asChild
                 variant="outline"
                 size="sm"
-                className="gap-2 bg-transparent"
+                className="gap-2 border-neutral-200 bg-white/50 text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:hover:text-white"
               >
                 <a
                   href={`https://github.com/${REPOSITORY}`}
@@ -351,64 +386,64 @@ function RouteComponent() {
             </div>
           </div>
 
-          <Separator className="my-6" />
+          <Separator className="my-6 dark:bg-neutral-700" />
 
-          <div className="flex flex-wrap items-center divide-x divide-border">
+          <div className="flex flex-wrap items-center divide-x divide-neutral-200 dark:divide-neutral-700">
             <div className="flex items-center gap-3 px-3 first:pl-0 last:pr-0 sm:px-4">
-              <Star className="h-4 w-4 text-muted-foreground" />
+              <Star className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
               <div className="flex items-baseline gap-1">
-                <span className="text-base font-bold sm:text-lg">
-                  {repoStats.stars}
+                <span className="text-base font-bold text-neutral-900 sm:text-lg dark:text-white">
+                  {repoStats.stars.toLocaleString()}
                 </span>
-                <span className="hidden text-xs text-muted-foreground sm:inline">
+                <span className="hidden text-xs text-neutral-500 sm:inline dark:text-neutral-400">
                   &nbsp;stars
                 </span>
               </div>
             </div>
 
             <div className="flex items-center gap-3 px-3 first:pl-0 last:pr-0 sm:px-4">
-              <GitCommit className="h-4 w-4 text-muted-foreground" />
+              <GitFork className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
               <div className="flex items-baseline gap-1">
-                <span className="text-base font-bold sm:text-lg">
-                  {repoStats.forks}
+                <span className="text-base font-bold text-neutral-900 sm:text-lg dark:text-white">
+                  {repoStats.forks.toLocaleString()}
                 </span>
-                <span className="hidden text-xs text-muted-foreground sm:inline">
+                <span className="hidden text-xs text-neutral-500 sm:inline dark:text-neutral-400">
                   &nbsp;forks
                 </span>
               </div>
             </div>
 
             <div className="hidden items-center gap-3 px-3 first:pl-0 last:pr-0 sm:flex sm:px-4">
-              <Github className="h-4 w-4 text-muted-foreground" />
+              <Github className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
               <div className="flex items-baseline gap-1">
-                <span className="text-base font-bold sm:text-lg">
-                  {repoStats.watchers}
+                <span className="text-base font-bold text-neutral-900 sm:text-lg dark:text-white">
+                  {repoStats.watchers.toLocaleString()}
                 </span>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-neutral-500 dark:text-neutral-400">
                   &nbsp;watchers
                 </span>
               </div>
             </div>
 
             <div className="flex items-center gap-3 px-3 first:pl-0 last:pr-0 sm:px-4">
-              <MessageCircle className="h-4 w-4 text-muted-foreground" />
+              <MessageCircle className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
               <div className="flex items-baseline gap-1">
-                <span className="text-base font-bold sm:text-lg">
-                  {repoStats.openIssues}
+                <span className="text-base font-bold text-neutral-900 sm:text-lg dark:text-white">
+                  {repoStats.openIssues.toLocaleString()}
                 </span>
-                <span className="hidden text-xs text-muted-foreground sm:inline">
+                <span className="hidden text-xs text-neutral-500 sm:inline dark:text-neutral-400">
                   &nbsp;issues
                 </span>
               </div>
             </div>
 
             <div className="flex items-center gap-3 px-3 first:pl-0 last:pr-0 sm:px-4">
-              <GitPullRequest className="h-4 w-4 text-muted-foreground" />
+              <GitPullRequest className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
               <div className="flex items-baseline gap-1">
-                <span className="text-base font-bold sm:text-lg">
-                  {repoStats.openPRs}
+                <span className="text-base font-bold text-neutral-900 sm:text-lg dark:text-white">
+                  {repoStats.openPRs.toLocaleString()}
                 </span>
-                <span className="hidden text-xs text-muted-foreground sm:inline">
+                <span className="hidden text-xs text-neutral-500 sm:inline dark:text-neutral-400">
                   &nbsp;PRs
                 </span>
               </div>
@@ -416,8 +451,9 @@ function RouteComponent() {
           </div>
 
           <div className="mt-6 grid gap-4 lg:grid-cols-3">
-            <Card className="col-span-full border-border bg-card p-4 lg:col-span-2">
-              <h3 className="mb-4 text-sm font-medium text-muted-foreground">
+            {/* Repository Growth */}
+            <Card className="col-span-full border-neutral-100 bg-white/50 p-4 hover:bg-white/60 lg:col-span-2 dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:bg-neutral-900/60">
+              <h3 className="mb-4 text-sm font-medium text-neutral-600 dark:text-neutral-400">
                 Repository Growth
               </h3>
               <ResponsiveContainer width="100%" height={240}>
@@ -426,24 +462,48 @@ function RouteComponent() {
                     <linearGradient id="stars" x1="0" y1="0" x2="0" y2="1">
                       <stop
                         offset="5%"
-                        stopColor="hsl(var(--foreground))"
+                        stopColor="rgb(64, 64, 64)"
                         stopOpacity={0.3}
                       />
                       <stop
                         offset="95%"
-                        stopColor="hsl(var(--foreground))"
+                        stopColor="rgb(64, 64, 64)"
+                        stopOpacity={0}
+                      />
+                    </linearGradient>
+                    <linearGradient id="starsDark" x1="0" y1="0" x2="0" y2="1">
+                      <stop
+                        offset="5%"
+                        stopColor="rgb(255, 255, 255)"
+                        stopOpacity={0.4}
+                      />
+                      <stop
+                        offset="95%"
+                        stopColor="rgb(255, 255, 255)"
                         stopOpacity={0}
                       />
                     </linearGradient>
                     <linearGradient id="forks" x1="0" y1="0" x2="0" y2="1">
                       <stop
                         offset="5%"
-                        stopColor="hsl(var(--muted-foreground))"
+                        stopColor="rgb(64, 64, 64)"
                         stopOpacity={0.3}
                       />
                       <stop
                         offset="95%"
-                        stopColor="hsl(var(--muted-foreground))"
+                        stopColor="rgb(64, 64, 64)"
+                        stopOpacity={0}
+                      />
+                    </linearGradient>
+                    <linearGradient id="forksDark" x1="0" y1="0" x2="0" y2="1">
+                      <stop
+                        offset="5%"
+                        stopColor="rgb(200, 200, 200)"
+                        stopOpacity={0.3}
+                      />
+                      <stop
+                        offset="95%"
+                        stopColor="rgb(200, 200, 200)"
                         stopOpacity={0}
                       />
                     </linearGradient>
@@ -454,7 +514,7 @@ function RouteComponent() {
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
-                    className="text-muted-foreground"
+                    className="text-neutral-600 dark:text-neutral-400"
                   />
                   <YAxis
                     stroke="currentColor"
@@ -462,29 +522,29 @@ function RouteComponent() {
                     tickLine={false}
                     axisLine={false}
                     tickFormatter={(value) => `${value}`}
-                    className="text-muted-foreground"
+                    className="text-neutral-600 dark:text-neutral-400"
                   />
                   <Tooltip
                     content={({ active, payload }) => {
-                      if (active && payload.length) {
+                      if (active && payload && payload.length) {
                         return (
-                          <div className="rounded-lg border bg-card p-3 shadow-lg">
+                          <div className="rounded-lg border border-neutral-200 bg-white p-3 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
                             <div className="grid gap-2">
                               <div className="flex items-center gap-2">
-                                <Star className="h-4 w-4" />
-                                <span className="text-sm text-muted-foreground">
+                                <Star className="h-4 w-4 text-neutral-900 dark:text-white" />
+                                <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                   Stars:
                                 </span>
-                                <span className="font-medium">
+                                <span className="font-medium text-neutral-900 dark:text-white">
                                   {payload[0]?.value}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <GitCommit className="h-4 w-4" />
-                                <span className="text-sm text-muted-foreground">
+                                <GitFork className="h-4 w-4 text-neutral-700 dark:text-neutral-300" />
+                                <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                   Forks:
                                 </span>
-                                <span className="font-medium">
+                                <span className="font-medium text-neutral-900 dark:text-white">
                                   {payload[1]?.value}
                                 </span>
                               </div>
@@ -498,54 +558,81 @@ function RouteComponent() {
                   <Area
                     type="monotone"
                     dataKey="stars"
-                    stroke="hsl(var(--foreground))"
-                    fill="url(#stars)"
+                    stroke="rgb(64, 64, 64)"
                     strokeWidth={2}
+                    fill="url(#stars)"
+                    className="dark:fill-[url(#starsDark)] dark:stroke-white"
                   />
                   <Area
                     type="monotone"
                     dataKey="forks"
-                    stroke="hsl(var(--muted-foreground))"
-                    fill="url(#forks)"
+                    stroke="rgb(64, 64, 64)"
                     strokeWidth={2}
+                    fill="url(#forks)"
+                    className="dark:fill-[url(#forksDark)] dark:stroke-neutral-300"
                   />
                 </AreaChart>
               </ResponsiveContainer>
             </Card>
 
-            <Card className="border-border bg-card p-4">
-              <h3 className="mb-4 text-sm font-medium text-muted-foreground">
-                Weekly Activity
+            {/* Activity Chart */}
+            <Card className="col-span-full border-neutral-200 bg-white/50 p-4 hover:bg-white/60 lg:col-span-1 dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:bg-neutral-900/60">
+              <h3 className="mb-4 text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                Recent Activity
               </h3>
               <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={activityData}>
+                <BarChart
+                  data={activityData}
+                  className="-mx-5 mt-2"
+                  layout="horizontal"
+                >
                   <XAxis
                     dataKey="date"
                     stroke="currentColor"
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
-                    className="text-muted-foreground"
+                    className="text-neutral-600 dark:text-neutral-400"
+                    interval={0}
                   />
                   <YAxis
                     stroke="currentColor"
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
-                    className="text-muted-foreground"
+                    className="text-neutral-600 dark:text-neutral-400"
                   />
                   <Tooltip
                     content={({ active, payload }) => {
-                      if (active && payload.length) {
+                      if (active && payload && payload.length) {
                         return (
-                          <div className="rounded-lg border bg-card p-3 shadow-lg">
+                          <div className="rounded-lg border border-neutral-200 bg-white p-3 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
                             <div className="grid gap-2">
                               <div className="flex items-center gap-2">
-                                <span className="text-sm text-muted-foreground">
+                                <GitGraph className="h-4 w-4 text-neutral-900 dark:text-white" />
+                                <span className="text-sm text-neutral-600 dark:text-neutral-400">
                                   Commits:
                                 </span>
-                                <span className="font-medium">
+                                <span className="font-medium text-neutral-900 dark:text-white">
                                   {payload[0]?.value}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <MessageCircle className="h-4 w-4 text-neutral-700 dark:text-neutral-300" />
+                                <span className="text-sm text-neutral-600 dark:text-neutral-400">
+                                  Issues:
+                                </span>
+                                <span className="font-medium text-neutral-900 dark:text-white">
+                                  {payload[1]?.value}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <GitPullRequest className="h-4 w-4 text-neutral-500 dark:text-neutral-500" />
+                                <span className="text-sm text-neutral-600 dark:text-neutral-400">
+                                  PRs:
+                                </span>
+                                <span className="font-medium text-neutral-900 dark:text-white">
+                                  {payload[2]?.value}
                                 </span>
                               </div>
                             </div>
@@ -557,8 +644,18 @@ function RouteComponent() {
                   />
                   <Bar
                     dataKey="commits"
-                    fill="hsl(var(--foreground))"
                     radius={[4, 4, 0, 0]}
+                    className="fill-neutral-900 dark:fill-white"
+                  />
+                  <Bar
+                    dataKey="issues"
+                    radius={[4, 4, 0, 0]}
+                    className="fill-neutral-700 dark:fill-neutral-300"
+                  />
+                  <Bar
+                    dataKey="pullRequests"
+                    radius={[4, 4, 0, 0]}
+                    className="fill-neutral-500 dark:fill-neutral-500"
                   />
                 </BarChart>
               </ResponsiveContainer>
@@ -566,100 +663,245 @@ function RouteComponent() {
           </div>
         </div>
 
-        <Tabs defaultValue="all" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 max-w-md">
-            <TabsTrigger value="all">All Contributors</TabsTrigger>
-            <TabsTrigger value="stats">Contribution Stats</TabsTrigger>
-          </TabsList>
+        {/* Core Team Section */}
+        <div className="mb-12 space-y-6">
+          <div className="text-center">
+            <h1 className="text-3xl font-semibold tracking-tight text-neutral-900/80 dark:text-white">
+              Core Team
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Meet the people behind {PROJECT_INFO.name}
+            </p>
+          </div>
 
-          <TabsContent value="all" className="mt-6">
-            <Card className="p-6">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold mb-2">Contributors</h2>
-                <p className="text-muted-foreground">
-                  Thank you to everyone who has contributed to RoadSyster
-                </p>
-              </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredCoreTeam?.map((member, index) => (
+              <div
+                key={member.login}
+                className="group relative flex items-center gap-4 rounded-xl border bg-white/50 p-4 transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:bg-neutral-900 dark:hover:shadow-neutral-900/50"
+                style={{
+                  animationDelay: `${index * 100}ms`,
+                }}
+              >
+                <Avatar className="h-16 w-16 ring-2 ring-neutral-200 transition-transform group-hover:scale-105 group-hover:ring-neutral-300 dark:ring-neutral-800 dark:group-hover:ring-neutral-700">
+                  <AvatarImage
+                    src={`https://github.com/${member.login}.png`}
+                    alt={member.login}
+                    className="object-cover"
+                  />
+                  <AvatarFallback className="text-xs">
+                    {member.login.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
 
-              <ChartControls
-                showAll={showAllContributors}
-                setShowAll={setShowAllContributors}
-                total={filteredContributors.length}
-              />
-
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {(showAllContributors
-                  ? filteredContributors
-                  : filteredContributors.slice(0, 10)
-                ).map((contributor) => (
-                  <a
-                    key={contributor.login}
-                    href={contributor.html_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors"
-                  >
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage
-                        src={contributor.avatar_url || "/placeholder.svg"}
-                        alt={contributor.login}
-                      />
-                      <AvatarFallback>
-                        {contributor.login.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate">
-                        {contributor.login}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        {contributor.contributions} contributions
-                      </div>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="stats" className="mt-6">
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold mb-6">
-                Contribution Statistics
-              </h2>
-
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold mb-3">
-                    Top 10 Contributors
+                <div className="flex-1">
+                  <h3 className="text-lg font-medium text-neutral-900 transition-colors group-hover:text-neutral-700 dark:text-neutral-200 dark:group-hover:text-white">
+                    {member.login}
                   </h3>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart
-                      data={filteredContributors.slice(0, 10)}
-                      layout="vertical"
-                      margin={{ left: 100 }}
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                    {specialRoles[member.login.toLowerCase()]?.role ||
+                      "Maintainer"}
+                  </p>
+                  <div className="mt-3 flex gap-2">
+                    <a
+                      href={`https://github.com/${member.login}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-md p-1 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
                     >
-                      <XAxis type="number" />
-                      <YAxis
+                      <Github className="h-4 w-4" />
+                    </a>
+                    {specialRoles[member.login.toLowerCase()]?.x && (
+                      <a
+                        href={`https://x.com/${specialRoles[member.login.toLowerCase()]?.x}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-md p-1 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                      >
+                        <Twitter className="h-4 w-4" />
+                      </a>
+                    )}
+                    {specialRoles[member.login.toLowerCase()]?.website && (
+                      <a
+                        href={
+                          specialRoles[member.login.toLowerCase()]?.website ||
+                          "#"
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-md p-1 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
+                      >
+                        <Globe className="h-4 w-4" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Contributors Section */}
+        <div className="mb-16 space-y-6">
+          <div className="text-center">
+            <h1 className="text-3xl font-semibold tracking-tight text-neutral-900/80 dark:text-white">
+              Contributors
+            </h1>
+            <div className="text-muted-foreground mt-2 flex items-center justify-center gap-2">
+              <span>
+                Thank you to all the contributors who have helped make{" "}
+                {PROJECT_INFO.name} possible
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <Tabs defaultValue="grid" className="w-full">
+              <div className="mb-6 flex justify-center">
+                <TabsList className="grid h-full w-full grid-cols-2 border border-neutral-200 bg-white/50 p-1 sm:w-[200px] dark:border-neutral-800 dark:bg-neutral-900/50">
+                  <TabsTrigger
+                    value="grid"
+                    className="flex items-center gap-2 text-neutral-600 data-[state=active]:bg-white data-[state=active]:text-neutral-900 data-[state=active]:shadow-sm dark:text-neutral-400 dark:data-[state=active]:bg-neutral-800 dark:data-[state=active]:text-white"
+                  >
+                    <LayoutGrid className="h-4 w-4" />
+                    Grid
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="chart"
+                    className="flex items-center gap-2 text-neutral-600 data-[state=active]:bg-white data-[state=active]:text-neutral-900 data-[state=active]:shadow-sm dark:text-neutral-400 dark:data-[state=active]:bg-neutral-800 dark:data-[state=active]:text-white"
+                  >
+                    <ChartAreaIcon className="h-4 w-4" />
+                    Chart
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+
+              <TabsContent value="grid">
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+                  {filteredContributors?.map((contributor, index) => (
+                    <a
+                      key={contributor.login}
+                      href={contributor.html_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group relative flex flex-col items-center rounded-xl border bg-white/50 p-4 transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-900/50 dark:hover:bg-neutral-900 dark:hover:shadow-neutral-900/50"
+                      style={{
+                        animationDelay: `${index * 50}ms`,
+                      }}
+                    >
+                      <Avatar className="h-16 w-16 ring-2 ring-neutral-200 transition-transform group-hover:scale-105 group-hover:ring-neutral-300 dark:ring-neutral-800 dark:group-hover:ring-neutral-700">
+                        <AvatarImage
+                          src={contributor.avatar_url || "/placeholder.svg"}
+                          alt={contributor.login}
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="text-xs">
+                          {contributor.login.slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div className="mt-3 text-center">
+                        <span className="block text-sm font-medium text-neutral-900 transition-colors group-hover:text-neutral-700 dark:text-neutral-200 dark:group-hover:text-white">
+                          {contributor.login}
+                        </span>
+                        <div className="mt-2 flex items-center justify-center gap-1">
+                          <GitGraph className="h-3 w-3 text-neutral-500 transition-colors group-hover:text-neutral-700 dark:text-neutral-400 dark:group-hover:text-neutral-300" />
+                          <span className="text-sm font-medium text-neutral-700 transition-colors group-hover:text-neutral-900 dark:text-neutral-300 dark:group-hover:text-white">
+                            {contributor.contributions}
+                          </span>
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="chart">
+                <Card className="bg-white/50 p-6 dark:bg-neutral-900/50">
+                  <ChartControls
+                    showAll={showAllContributors}
+                    setShowAll={setShowAllContributors}
+                    total={filteredContributors?.length || 0}
+                  />
+
+                  <ResponsiveContainer width="100%" height={400}>
+                    <BarChart
+                      data={filteredContributors?.slice(
+                        0,
+                        showAllContributors ? undefined : 10,
+                      )}
+                      margin={{ top: 10, right: 10, bottom: 20, left: 10 }}
+                    >
+                      <XAxis
                         dataKey="login"
-                        type="category"
-                        width={100}
+                        interval={0}
+                        tick={(props) => {
+                          const { x, y, payload } = props;
+                          const contributor = allContributors?.find(
+                            (c) => c.login === payload.value,
+                          );
+
+                          return (
+                            <g transform={`translate(${x},${y})`}>
+                              <foreignObject
+                                x="-12"
+                                y="8"
+                                width="24"
+                                height="24"
+                              >
+                                <Avatar className="h-6 w-6 ring-1 ring-neutral-200 dark:ring-neutral-800">
+                                  <AvatarImage
+                                    src={
+                                      contributor?.avatar_url ||
+                                      "/placeholder.svg"
+                                    }
+                                  />
+                                  <AvatarFallback className="text-[8px]">
+                                    {payload.value.slice(0, 2).toUpperCase()}
+                                  </AvatarFallback>
+                                </Avatar>
+                              </foreignObject>
+                            </g>
+                          );
+                        }}
+                        height={60}
+                        className="text-neutral-600 dark:text-neutral-400"
+                      />
+                      <YAxis
                         stroke="currentColor"
                         fontSize={12}
                         tickLine={false}
                         axisLine={false}
-                        className="text-muted-foreground"
+                        tickFormatter={(value) => `${value}`}
+                        className="text-neutral-600 dark:text-neutral-400"
                       />
                       <Tooltip
+                        cursor={{ fill: "rgb(0 0 0 / 0.05)" }}
                         content={({ active, payload }) => {
-                          if (active && payload.length) {
+                          if (active && payload && payload.length) {
+                            const data = payload[0]?.payload as Contributor;
                             return (
-                              <div className="rounded-lg border bg-card p-3 shadow-lg">
-                                <div className="font-medium">
-                                  {payload[0]?.payload?.login}
-                                </div>
-                                <div className="text-sm text-muted-foreground">
-                                  {payload[0]?.value} contributions
+                              <div className="rounded-lg border border-neutral-200 bg-white p-3 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
+                                <div className="flex items-center gap-2">
+                                  <Avatar className="h-8 w-8 ring-1 ring-neutral-200 dark:ring-neutral-800">
+                                    <AvatarImage
+                                      src={
+                                        data.avatar_url || "/placeholder.svg"
+                                      }
+                                    />
+                                    <AvatarFallback>
+                                      {data.login.slice(0, 2).toUpperCase()}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <div>
+                                    <div className="text-sm font-medium text-neutral-900 dark:text-white">
+                                      {data.login}
+                                    </div>
+                                    <div className="flex items-center gap-1 text-xs text-neutral-600 dark:text-neutral-400">
+                                      <GitGraph className="h-3 w-3" />
+                                      <span>{data.contributions} commits</span>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                             );
@@ -669,55 +911,156 @@ function RouteComponent() {
                       />
                       <Bar
                         dataKey="contributions"
-                        fill="hsl(var(--primary))"
-                        radius={[0, 4, 4, 0]}
+                        className="fill-neutral-900 dark:fill-white"
+                        radius={[4, 4, 0, 0]}
                       />
                     </BarChart>
                   </ResponsiveContainer>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </div>
+
+        {/* CTA Section */}
+        <div className="mb-8">
+          <div className="relative overflow-hidden rounded-xl border bg-gradient-to-br from-neutral-50 to-white shadow-sm dark:border-neutral-800 dark:from-neutral-900/80 dark:to-neutral-900/30">
+            <div className="absolute inset-0 opacity-20 dark:opacity-20" />
+
+            <div className="relative p-6">
+              <div className="flex flex-col items-center gap-8 md:flex-row">
+                <div className="w-full md:w-2/3">
+                  <div className="inline-flex items-center rounded-full bg-neutral-900 px-3 py-1 text-xs font-medium text-white dark:bg-white dark:text-neutral-900">
+                    <Github className="mr-1.5 h-3.5 w-3.5" />
+                    AGPL-3.0 Licensed
+                  </div>
+                  <h2 className="mt-3 text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+                    {"Let's build the future of email together"}
+                  </h2>
+                  <p className="mt-3 text-neutral-600 dark:text-neutral-300">
+                    {
+                      "Whether you're fixing bugs, adding features, or improving documentation, every contribution matters."
+                    }
+                  </p>
+                  <div className="mt-5 flex flex-wrap gap-3">
+                    <Button
+                      asChild
+                      className="relative overflow-hidden bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+                    >
+                      <a
+                        href={`https://github.com/${REPOSITORY}/blob/main/.github/CONTRIBUTING.md`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <span className="relative z-10 flex items-center">
+                          <GitGraph className="mr-2 h-4 w-4" />
+                          Start Contributing
+                        </span>
+                      </a>
+                    </Button>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="gap-2 border-neutral-200 bg-white/80 text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:hover:text-white"
+                    >
+                      <a
+                        href={`https://github.com/${REPOSITORY}/issues`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                        Open Issues
+                      </a>
+                    </Button>
+                  </div>
                 </div>
 
-                <Separator />
+                <div className="hidden md:block md:w-1/3">
+                  <div className="space-y-4 rounded-xl border border-neutral-200 bg-white/80 p-5 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/80">
+                    <div className="flex items-center gap-1">
+                      <div className="flex -space-x-4">
+                        {filteredContributors
+                          ?.slice(0, 5)
+                          .map((contributor) => (
+                            <Avatar
+                              key={contributor.login}
+                              className="h-8 w-8 rounded-full border-2 border-white dark:border-neutral-900"
+                            >
+                              <AvatarImage
+                                src={
+                                  contributor.avatar_url || "/placeholder.svg"
+                                }
+                                alt={contributor.login}
+                              />
+                              <AvatarFallback className="text-xs">
+                                {contributor.login.slice(0, 2).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                          ))}
+                        {filteredContributors &&
+                          filteredContributors.length > 5 && (
+                            <div className="z-50 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-neutral-100 text-xs font-medium text-neutral-800 dark:border-neutral-900 dark:bg-neutral-800 dark:text-neutral-200">
+                              +{filteredContributors.length - 5}
+                            </div>
+                          )}
+                      </div>
+                      <div className="text-sm text-neutral-600 dark:text-neutral-300">
+                        contributors
+                      </div>
+                    </div>
 
-                <div className="grid gap-4 sm:grid-cols-3">
-                  <Card className="p-4 bg-muted/30">
-                    <div className="text-2xl font-bold">
-                      {filteredContributors.length}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="rounded-lg bg-neutral-50 p-2 dark:bg-neutral-800/50">
+                        <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                          Stars
+                        </div>
+                        <div className="mt-1 flex items-center gap-1">
+                          <Star className="h-3.5 w-3.5 text-neutral-700 dark:text-neutral-300" />
+                          <span className="text-sm font-semibold text-neutral-900 dark:text-white">
+                            {repoStats.stars.toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="rounded-lg bg-neutral-50 p-2 dark:bg-neutral-800/50">
+                        <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                          Forks
+                        </div>
+                        <div className="mt-1 flex items-center gap-1">
+                          <GitFork className="h-3.5 w-3.5 text-neutral-700 dark:text-neutral-300" />
+                          <span className="text-sm font-semibold text-neutral-900 dark:text-white">
+                            {repoStats.forks.toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-sm text-muted-foreground">
-                      Total Contributors
-                    </div>
-                  </Card>
-                  <Card className="p-4 bg-muted/30">
-                    <div className="text-2xl font-bold">
-                      {filteredContributors.reduce(
-                        (sum, c) => sum + c.contributions,
-                        0,
-                      )}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Total Contributions
-                    </div>
-                  </Card>
-                  <Card className="p-4 bg-muted/30">
-                    <div className="text-2xl font-bold">
-                      {filteredContributors.length > 0
-                        ? Math.round(
-                            filteredContributors.reduce(
-                              (sum, c) => sum + c.contributions,
-                              0,
-                            ) / filteredContributors.length,
-                          )
-                        : 0}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Avg Contributions
-                    </div>
-                  </Card>
+                  </div>
                 </div>
               </div>
-            </Card>
-          </TabsContent>
-        </Tabs>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Social Links */}
+        <div className="mb-6 mt-2 flex items-center justify-center gap-4">
+          <a
+            href={PROJECT_INFO.discordUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-neutral-500 transition-colors hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
+            aria-label="Join our Discord"
+          >
+            <Discord className="h-4 w-4" />
+          </a>
+          <a
+            href={PROJECT_INFO.twitterUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-neutral-500 transition-colors hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
+            aria-label="Follow us on X (Twitter)"
+          >
+            <Twitter className="h-4 w-4" />
+          </a>
+        </div>
       </div>
     </div>
   );
