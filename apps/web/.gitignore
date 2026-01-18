@@ -10,7 +10,9 @@
 /coverage
 
 # next.js
-/.next/
+/.output/
+/.nitro/
+/.tanstack/
 /out/
 
 # production
