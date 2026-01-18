@@ -53,6 +53,8 @@ function RouteComponent() {
                       {section.title}
                     </h2>
                     <Button
+                      variant="ghost"
+                      size="icon-sm"
                       onClick={() => handleCopyLink(sectionId)}
                       className="text-gray-400 hover:text-gray-700 dark:text-white/60 dark:hover:text-white/80"
                       aria-label={`Copy link to ${section.title} section`}
