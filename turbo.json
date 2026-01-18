@@ -2,7 +2,7 @@
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "tui",
   "tasks": {
-    "@roadsyster/web#build": {
+    "build": {
       "dependsOn": ["^build"],
       "outputs": [".output/**", "dist/**", ".vinxi/**"],
       "env": ["DATABASE_URL"]

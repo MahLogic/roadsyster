@@ -1,0 +1,1 @@
+import{j as e}from"./main-DrgFmjJ8.js";function t(){return e.jsxDEV("div",{children:'Hello "/about"!'},void 0,!1,{fileName:"/home/kellz/roadsyster/apps/web/src/routes/about.tsx?tsr-split=component",lineNumber:2,columnNumber:10},this)}export{t as component};
