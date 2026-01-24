@@ -1,4 +1,4 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   Box,
@@ -10,11 +10,11 @@ import {
   Github,
   Users,
 } from "feather-icons-react";
+import { Boxes } from "lucide-react";
+import { Navigation } from "@/components/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { WaitlistDialog } from "@/components/waitlist/dialog";
-import { Navigation } from "@/components/navigation";
-import { Boxes } from "lucide-react";
 
 export const Route = createFileRoute("/(info)/")({ component: App });
 
@@ -637,7 +637,7 @@ function App() {
                 </li>
                 <li>
                   <a
-                    href="/roadmap.pdf"
+                    href="/roadmap"
                     className="hover:text-foreground transition-colors"
                   >
                     Roadmap
