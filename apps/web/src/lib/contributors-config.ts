@@ -26,6 +26,7 @@ export const EXCLUDED_USERNAMES = [
  */
 export const CORE_TEAM_MEMBERS: CoreTeamMember[] = [
   {
+    name: "Kelly Mahlangu",
     username: "mahkellz",
     role: "Founder & CEO",
     position: 1,
@@ -51,6 +52,7 @@ export const PROJECT_INFO = {
 
 export interface CoreTeamMember {
   username: string;
+  name: string;
   role: string;
   position: number;
   x?: string;
@@ -59,6 +61,7 @@ export interface CoreTeamMember {
 
 export interface Contributor {
   login: string;
+  name?: string;
   avatar_url: string;
   contributions: number;
   html_url: string;

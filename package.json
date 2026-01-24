@@ -5,6 +5,13 @@
     "build": "turbo run build",
     "start": "turbo run start",
     "dev": "turbo run dev",
+    "dev:web": "pnpm --filter @roadsyster/web dev",
+    "dev:server": "pnpm --filter @roadsyster/server dev",
+    "db:generate": "pnpm --filter @roadsyster/server db:generate",
+    "db:migrate": "pnpm --filter @roadsyster/server db:migrate",
+    "db:push": "pnpm --filter @roadsyster/server db:push",
+    "db:pull": "pnpm --filter @roadsyster/server db:pull",
+    "db:studio": "pnpm --filter @roadsyster/server db:studio",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"
