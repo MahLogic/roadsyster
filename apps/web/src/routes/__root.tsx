@@ -1,13 +1,17 @@
-import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  createRootRoute,
+  HeadContent,
+  Link,
+  Scripts,
+} from "@tanstack/react-router";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
-import appCss from "../styles.css?url";
-import { Toaster } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
-import { Link } from "@tanstack/react-router";
+import { Toaster } from "@/components/ui/sonner";
+import appCss from "../globals.css?url";
 
 export const Route = createRootRoute({
   head: () => ({
