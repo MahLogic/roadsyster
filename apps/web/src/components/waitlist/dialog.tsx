@@ -1,9 +1,19 @@
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { AlertCircle, Check, Loader, Mail } from "feather-icons-react";
+import { AlertCircle, Check, Loader, Mail, Phone } from "feather-icons-react";
 import { WhatsAppShareButton } from "./whatsapp-share-btn";
 import type React from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+  FormDescription,
+} from "@/components/ui/form";
 import {
   Dialog,
   DialogContent,
@@ -13,30 +23,61 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { z } from "zod";
 import { joinWaitlist } from "@/server/waitlist";
+import { CountryCode, isValidPhoneNumber } from "libphonenumber-js";
+import { createEmailValidator, createPhoneValidator } from "@/lib/validators";
+import PhoneInput from "../phone-input";
 
 interface WaitlistDialogProps {
   children: React.ReactNode;
+  countryCode?: CountryCode;
 }
 
 type FormState = "idle" | "loading" | "success" | "error";
 
-function WaitlistDialog({ children }: WaitlistDialogProps) {
+const formSchema = z.object({
+  email: z.email(),
+  contact: z
+    .string()
+    .refine(
+      (phone) => {
+        try {
+          return isValidPhoneNumber(phone);
+        } catch {
+          return false;
+        }
+      },
+      { message: "Invalid phone number" },
+    )
+    .optional(),
+});
+type FormValues = z.infer<typeof formSchema>;
+
+function WaitlistDialog({ children, countryCode = "ZA" }: WaitlistDialogProps) {
   const [formState, setFormState] = useState<FormState>("idle");
-  const [email, setEmail] = useState("");
+  // const [email, setEmail] = useState("");
   const [message, setMessage] = useState<string | undefined>(undefined);
 
-  const joinWaitlistServer = useServerFn(joinWaitlist);
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormState("loading");
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      contact: "",
+    },
+    mode: "onBlur", // Validate on blur for better UX
+  });
 
+  const joinWaitlistServer = useServerFn(joinWaitlist);
+  const onSubmit = async (data: FormValues) => {
+    console.log("adding");
+    setFormState("loading");
     const { success, message: msg } = await joinWaitlistServer({
-      data: { email },
+      data,
     });
     if (success) {
       setFormState("success");
-      setEmail("");
+      form.reset();
     } else {
       setFormState("error");
     }
@@ -46,7 +87,7 @@ function WaitlistDialog({ children }: WaitlistDialogProps) {
 
   const resetForm = () => {
     setFormState("idle");
-    setEmail("");
+    form.reset();
   };
 
   return (
@@ -102,40 +143,73 @@ function WaitlistDialog({ children }: WaitlistDialogProps) {
         </div>
 
         {formState === "idle" || formState === "loading" ? (
-          <form className="space-y-5" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <div className="relative">
-                <Input
-                  id="dialog-subscribe"
-                  className="peer ps-9"
-                  placeholder="you@example.com"
-                  type="email"
-                  aria-label="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={formState === "loading"}
-                  required
-                />
-                <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                  <Mail size={16} strokeWidth={2} aria-hidden="true" />
-                </div>
-              </div>
-            </div>
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={formState === "loading"}
-            >
-              {formState === "loading" ? (
-                <>
-                  <Loader className="mr-2 size-4 animate-spin" />
-                  Joining waitlist...
-                </>
-              ) : (
-                "Join waitlist"
-              )}
-            </Button>
-          </form>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          className="peer ps-9"
+                          placeholder="you@example.com"
+                          type="email"
+                          disabled={formState === "loading"}
+                          {...field}
+                        />
+                        <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                          <Mail size={16} strokeWidth={2} aria-hidden="true" />
+                        </div>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                    <FormDescription className="text-xs">
+                      We'll never share your email with anyone.
+                    </FormDescription>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="contact"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <div className="relative">
+                        <PhoneInput
+                          {...field}
+                          id="phone-field"
+                          placeholder="(123) 456-7890 (optional)"
+                          className="border rounded-lg h-10 w-full"
+                          disabled={formState === "loading"}
+                          onBlur={field.onBlur}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={formState === "loading"}
+              >
+                {formState === "loading" ? (
+                  <>
+                    <Loader className="mr-2 size-4 animate-spin" />
+                    Joining waitlist...
+                  </>
+                ) : (
+                  "Join waitlist"
+                )}
+              </Button>
+            </form>
+          </Form>
         ) : formState === "error" ? (
           <Button onClick={resetForm} className="w-full">
             Try again

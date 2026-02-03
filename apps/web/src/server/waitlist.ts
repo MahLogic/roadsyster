@@ -3,25 +3,56 @@ import { eq } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
 import { waitlist } from "@/db/schema";
+import { geoMiddleware } from "./midddleware/geo";
+import { isValidPhoneNumber } from "libphonenumber-js";
+
+const phoneNumber = z
+  .string()
+  .refine(
+    (phone) => {
+      try {
+        return isValidPhoneNumber(phone);
+      } catch {
+        return false;
+      }
+    },
+    { message: "Invalid phone number" },
+  )
+  .optional();
 
 export const joinWaitlist = createServerFn({ method: "POST" })
-  .inputValidator(z.object({ email: z.email() }))
-  .handler(async ({ data: { email } }) => {
+  .middleware([geoMiddleware])
+  .inputValidator(z.object({ email: z.email(), contact: phoneNumber }))
+  .handler(async ({ data: { email, contact }, context: { geo } }) => {
+    const { country, city } = geo;
     try {
-      const exists = await db
-        .select({ id: waitlist.id })
-        .from(waitlist)
-        .where(eq(waitlist.email, email))
-        .limit(1);
+      const existingUser = await db.query.waitlist.findFirst({
+        where: eq(waitlist.email, email),
+      });
 
-      if (exists.length > 0) {
+      if (existingUser) {
+        if (existingUser.country === "XX" || existingUser.city === "unknown") {
+          await db
+            .update(waitlist)
+            .set({ country, city })
+            .where(eq(waitlist.id, existingUser.id));
+        }
+        if (existingUser.contact === null && contact) {
+          await db
+            .update(waitlist)
+            .set({ contact })
+            .where(eq(waitlist.id, existingUser.id));
+        }
         return {
           success: true,
           message: "Email already exists in waitlist",
         };
       }
 
-      const user = await db.insert(waitlist).values({ email }).returning();
+      const user = await db
+        .insert(waitlist)
+        .values({ email, country, city, contact })
+        .returning();
       if (user.length === 0) {
         return {
           success: false,
@@ -38,11 +69,17 @@ export const joinWaitlist = createServerFn({ method: "POST" })
     }
   });
 
-export const numberOfWaitlist = createServerFn({ method: "GET" }).handler(
-  async () => {
+export const numberOfWaitlist = createServerFn({ method: "GET" })
+  .middleware([geoMiddleware])
+  .handler(async ({ context: { geo } }) => {
     try {
       const users = await db.select().from(waitlist);
-      return { count: users.length };
+      const countryCount = users.filter(
+        (user) => user.country === geo.country,
+      ).length;
+      const cityCount = users.filter((user) => user.city === geo.city).length;
+
+      return { count: users.length, countryCount, cityCount };
     } catch (error) {
       console.error(error);
       if (error instanceof Error) {
@@ -50,5 +87,4 @@ export const numberOfWaitlist = createServerFn({ method: "GET" }).handler(
       }
       return { error: "Unknown error" };
     }
-  },
-);
+  });

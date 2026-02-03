@@ -15,6 +15,27 @@
       "when": 1768160725332,
       "tag": "0001_next_the_spike",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770079380763,
+      "tag": "0002_eminent_xorn",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1770079708386,
+      "tag": "0003_daffy_morlun",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1770089746366,
+      "tag": "0004_white_jasper_sitwell",
+      "breakpoints": true
     }
   ]
 }

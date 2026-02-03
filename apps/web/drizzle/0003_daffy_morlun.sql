@@ -1,0 +1,1 @@
+ALTER TABLE "waitlist" ALTER COLUMN "country" SET DEFAULT 'XX';
