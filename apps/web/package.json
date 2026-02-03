@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "pnpm exec vite dev",
-    "build": "pnpm exec vite build",
+    "build": "pnpm exec vite build && pnpm db:migrate ",
     "start": "pnpm exec vite start",
     "db:generate": "pnpm --env-file=.env drizzle-kit generate",
     "db:migrate": "pnpm --env-file=.env drizzle-kit migrate",
