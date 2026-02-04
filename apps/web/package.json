@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"pnpm exec vite dev\" \"pnpm dlx convex dev\"",
-    "build": "pnpm exec vite build && pnpm db:migrate ",
+    "build": "pnpm exec vite build",
     "start": "pnpm exec vite start"
   },
   "dependencies": {
