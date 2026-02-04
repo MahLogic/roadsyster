@@ -66,7 +66,10 @@ export const Route = createRootRouteWithContext<{
 const queryClient = new QueryClient();
 
 function RootComponent() {
-  initPostHog(posthog);
+  posthog.init(import.meta.env.PUBLIC_POSTHOG_KEY, {
+    api_host: import.meta.env.PUBLIC_POSTHOG_HOST,
+    defaults: "2025-11-30",
+  });
   return (
     <RootDocument>
       <PostHogProvider client={posthog}>
