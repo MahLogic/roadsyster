@@ -1,4 +1,9 @@
-import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
+import {
+  HeadContent,
+  Scripts,
+  createRootRoute,
+  Outlet,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -8,8 +13,16 @@ import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
+import { createRootRouteWithContext } from "@tanstack/react-router";
+import * as React from "react";
+import posthog from "posthog-js";
+import { PostHogProvider } from "posthog-js/react";
+import { env } from "@/env";
+import { initPostHog } from "@/lib/posthog";
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{
+  queryClient: QueryClient;
+}>()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -31,7 +44,6 @@ export const Route = createRootRoute({
       },
     ],
   }),
-  shellComponent: RootLayout,
   notFoundComponent: () => (
     <main className="flex min-h-screen flex-col items-center justify-center gap-6 p-4">
       <div className="text-center">
@@ -48,26 +60,30 @@ export const Route = createRootRoute({
       </Button>
     </main>
   ),
+  component: RootComponent,
 });
 
 const queryClient = new QueryClient();
 
-function MainLayout({ children }: { children: React.ReactNode }) {
+function RootComponent() {
+  initPostHog(posthog);
   return (
-    <QueryClientProvider client={queryClient}>
-      {children} <Toaster position="top-center" richColors />
-    </QueryClientProvider>
+    <RootDocument>
+      <PostHogProvider client={posthog}>
+        <Outlet /> <Toaster position="top-center" richColors />
+      </PostHogProvider>
+    </RootDocument>
   );
 }
 
-function RootLayout({ children }: { children: React.ReactNode }) {
+function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
       <head>
         <HeadContent />
       </head>
       <body>
-        <MainLayout>{children}</MainLayout>
+        {children}
         <Analytics />
         <SpeedInsights />
         <TanStackDevtools

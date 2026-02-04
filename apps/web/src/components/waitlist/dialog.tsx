@@ -24,7 +24,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
-import { joinWaitlist } from "@/server/waitlist";
 import { CountryCode, isValidPhoneNumber } from "libphonenumber-js";
 import { createEmailValidator, createPhoneValidator } from "@/lib/validators";
 import PhoneInput from "../phone-input";
@@ -56,7 +55,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 function WaitlistDialog({ children, countryCode = "ZA" }: WaitlistDialogProps) {
   const [formState, setFormState] = useState<FormState>("idle");
-  // const [email, setEmail] = useState("");
+  const [location, setLocation] = useState("");
   const [message, setMessage] = useState<string | undefined>(undefined);
 
   const form = useForm<FormValues>({
@@ -68,21 +67,21 @@ function WaitlistDialog({ children, countryCode = "ZA" }: WaitlistDialogProps) {
     mode: "onBlur", // Validate on blur for better UX
   });
 
-  const joinWaitlistServer = useServerFn(joinWaitlist);
+  // const joinWaitlistServer = useServerFn(joinWaitlist);
   const onSubmit = async (data: FormValues) => {
     console.log("adding");
     setFormState("loading");
-    const { success, message: msg } = await joinWaitlistServer({
-      data,
-    });
-    if (success) {
-      setFormState("success");
-      form.reset();
-    } else {
-      setFormState("error");
-    }
+    // const { success, message: msg } = await joinWaitlistServer({
+    //   data,
+    // });
+    // if (success) {
+    //   setFormState("success");
+    //   form.reset();
+    // } else {
+    //   setFormState("error");
+    // }
 
-    setMessage(msg);
+    setMessage("msg");
   };
 
   const resetForm = () => {
