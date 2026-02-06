@@ -42,6 +42,24 @@ export const Route = createRootRouteWithContext<{
         property: "og:type",
         content: "website",
       },
+
+      {
+        property: "twitter:card",
+        content: "summary_large_image",
+      },
+      {
+        property: "twitter:title",
+        content: "RoadSyster - Your Co-Pilot on the Freelance Road",
+      },
+      {
+        property: "twitter:description",
+        content:
+          "Stop juggling spreadsheets and scattered tools. RoadSyster is an open-source CRM for freelancers to manage clients, projects, invoices & finances in one place.",
+      },
+      {
+        property: "twitter:image",
+        content: "https://roadsyster.co.za/preview-image.png",
+      },
     ],
     links: [
       {
