@@ -31,15 +31,15 @@ export const Route = createRootRouteWithContext<{
           "Stop juggling spreadsheets and scattered tools. RoadSyster is an open-source CRM for freelancers to manage clients, projects, invoices & finances in one place.",
       },
       {
-        property: "image",
+        property: "og:image",
         content: "https://roadsyster.com/preview-image.png",
       },
       {
-        property: "url",
+        property: "og:url",
         content: "https://roadsyster.com",
       },
       {
-        property: "type",
+        property: "og:type",
         content: "website",
       },
     ],
