@@ -29,7 +29,7 @@ export const CORE_TEAM_MEMBERS: CoreTeamMember[] = [
     username: "mahkellz",
     role: "Founder & CEO",
     position: 1,
-    x: "GoKells_OG",
+    x: "mahkellz",
   },
 ];
 

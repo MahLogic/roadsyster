@@ -24,11 +24,23 @@ export const Route = createRootRouteWithContext<{
         name: "viewport",
         content: "width=device-width, initial-scale=1",
       },
-      { title: "RoadSyster" },
+      { title: "RoadSyster - Your Co-Pilot on the Freelance Road" },
       {
         name: "description",
         content:
-          "RoadSyster is a web application for managing roads and traffic.",
+          "Stop juggling spreadsheets and scattered tools. RoadSyster is an open-source CRM for freelancers to manage clients, projects, invoices & finances in one place.",
+      },
+      {
+        property: "image",
+        content: "https://roadsyster.com/preview-image.png",
+      },
+      {
+        property: "url",
+        content: "https://roadsyster.com",
+      },
+      {
+        property: "type",
+        content: "website",
       },
     ],
     links: [
