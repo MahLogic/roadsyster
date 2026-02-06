@@ -32,11 +32,11 @@ export const Route = createRootRouteWithContext<{
       },
       {
         property: "og:image",
-        content: "https://roadsyster.com/preview-image.png",
+        content: "https://roadsyster.co.za/preview-image.png",
       },
       {
         property: "og:url",
-        content: "https://roadsyster.com",
+        content: "https://roadsyster.co.za",
       },
       {
         property: "og:type",
@@ -89,17 +89,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
-        <TanStackDevtools
-          config={{
-            position: "bottom-right",
-          }}
-          plugins={[
-            {
-              name: "Tanstack Router",
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
         <Scripts />
       </body>
     </html>
