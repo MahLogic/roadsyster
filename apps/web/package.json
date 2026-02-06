@@ -4,7 +4,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"pnpm exec vite dev\" \"pnpm dlx convex dev\"",
+    "dev": "concurrently \"pnpm dev:frontend\" \"pnpm dev:backend\"",
+    "dev:frontend": "pnpm exec vite dev",
+    "dev:backend": "pnpm exec convex dev",
     "build": "pnpm exec vite build",
     "start": "pnpm exec vite start"
   },
@@ -13,6 +15,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@neondatabase/serverless": "^1.0.2",
     "@posthog/react": "^1.7.0",
+    "@posthog/types": "^1.341.0",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-dialog": "^1.1.15",

@@ -1,6 +1,13 @@
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { AlertCircle, Check, Loader, Mail, Phone } from "feather-icons-react";
+import {
+  AlertCircle,
+  Check,
+  Loader,
+  Mail,
+  Phone,
+  User,
+} from "feather-icons-react";
 import { WhatsAppShareButton } from "./whatsapp-share-btn";
 import type React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,61 +34,81 @@ import { z } from "zod";
 import { CountryCode, isValidPhoneNumber } from "libphonenumber-js";
 import { createEmailValidator, createPhoneValidator } from "@/lib/validators";
 import PhoneInput from "../phone-input";
+import { Surface } from "recharts";
+import { useMutation } from "convex/react";
+import { api } from "convex/_generated/api";
+import { trackWaitlistSignup } from "@/lib/posthog";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { usePostHog } from "posthog-js/react";
 
 interface WaitlistDialogProps {
   children: React.ReactNode;
-  countryCode?: CountryCode;
 }
 
 type FormState = "idle" | "loading" | "success" | "error";
 
 const formSchema = z.object({
   email: z.email(),
-  contact: z
-    .string()
-    .refine(
-      (phone) => {
-        try {
-          return isValidPhoneNumber(phone);
-        } catch {
-          return false;
-        }
-      },
-      { message: "Invalid phone number" },
-    )
-    .optional(),
+  firstName: z.string().min(2).max(100),
+  lastName: z.string().min(2).max(100),
 });
 type FormValues = z.infer<typeof formSchema>;
 
-function WaitlistDialog({ children, countryCode = "ZA" }: WaitlistDialogProps) {
+function WaitlistDialog({ children }: WaitlistDialogProps) {
+  const posthog = usePostHog();
   const [formState, setFormState] = useState<FormState>("idle");
-  const [location, setLocation] = useState("");
   const [message, setMessage] = useState<string | undefined>(undefined);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
-      contact: "",
+      firstName: "",
+      lastName: "",
     },
     mode: "onBlur", // Validate on blur for better UX
   });
 
-  // const joinWaitlistServer = useServerFn(joinWaitlist);
-  const onSubmit = async (data: FormValues) => {
-    console.log("adding");
-    setFormState("loading");
-    // const { success, message: msg } = await joinWaitlistServer({
-    //   data,
-    // });
-    // if (success) {
-    //   setFormState("success");
-    //   form.reset();
-    // } else {
-    //   setFormState("error");
-    // }
+  const watchedValues = form.watch();
 
-    setMessage("msg");
+  const isFieldValid = (name: keyof FormValues) => {
+    const value = watchedValues[name];
+    const fieldSchema = formSchema.shape[name];
+    return fieldSchema.safeParse(value).success;
+  };
+
+  const joinWaitlist = useMutation(api.waitlist.add);
+  const onSubmit = async (data: FormValues) => {
+    setFormState("loading");
+    try {
+      const res = await joinWaitlist(data);
+      // res = { status, message, waitlistId }
+
+      setFormState("success");
+      setMessage(res.message);
+
+      // Track only on real creation
+      if (res.status === "CREATED") {
+        toast("You've been added to the waitlist!");
+        trackWaitlistSignup(posthog, res.waitlistId);
+      }
+
+      form.reset();
+    } catch (err) {
+      setFormState("error");
+
+      if (err instanceof Error) {
+        switch (err.message) {
+          case "INVALID_EMAIL":
+            setMessage("Please enter a valid email address.");
+            break;
+          default:
+            toast(err.message);
+            setMessage("Something went wrong. Please try again.");
+        }
+      }
+    }
   };
 
   const resetForm = () => {
@@ -143,7 +170,56 @@ function WaitlistDialog({ children, countryCode = "ZA" }: WaitlistDialogProps) {
 
         {formState === "idle" || formState === "loading" ? (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <div className="relative flex gap-3">
+                <div
+                  className={`pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 transition-colors ${isFieldValid("firstName") && isFieldValid("lastName") ? "text-green-500" : "text-muted-foreground/80"}`}
+                >
+                  <User size={16} strokeWidth={2} aria-hidden="true" />
+                </div>
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormControl>
+                        <Input
+                          className={cn(
+                            "ps-9",
+                            isFieldValid("firstName")
+                              ? "border-green-500"
+                              : "border-red-500",
+                          )}
+                          placeholder="First name"
+                          disabled={formState === "loading"}
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormControl>
+                        <Input
+                          className={cn(
+                            isFieldValid("lastName")
+                              ? "border-green-500"
+                              : "border-red-500",
+                          )}
+                          placeholder="Last name"
+                          disabled={formState === "loading"}
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <FormField
                 control={form.control}
                 name="email"
@@ -152,43 +228,27 @@ function WaitlistDialog({ children, countryCode = "ZA" }: WaitlistDialogProps) {
                     <FormControl>
                       <div className="relative">
                         <Input
-                          className="peer ps-9"
+                          className={cn(
+                            "peer ps-9",
+                            isFieldValid("email")
+                              ? "border-green-500"
+                              : "border-red-500",
+                          )}
                           placeholder="you@example.com"
                           type="email"
                           disabled={formState === "loading"}
                           {...field}
                         />
-                        <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                        <div
+                          className={`pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50 transition-colors ${isFieldValid("email") ? "text-green-500" : "text-muted-foreground/80"}`}
+                        >
                           <Mail size={16} strokeWidth={2} aria-hidden="true" />
                         </div>
                       </div>
                     </FormControl>
-                    <FormMessage />
                     <FormDescription className="text-xs">
-                      We'll never share your email with anyone.
+                      {"We'll never share your email with anyone."}
                     </FormDescription>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="contact"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <div className="relative">
-                        <PhoneInput
-                          {...field}
-                          id="phone-field"
-                          placeholder="(123) 456-7890 (optional)"
-                          className="border rounded-lg h-10 w-full"
-                          disabled={formState === "loading"}
-                          onBlur={field.onBlur}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -196,7 +256,12 @@ function WaitlistDialog({ children, countryCode = "ZA" }: WaitlistDialogProps) {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={formState === "loading"}
+                disabled={
+                  formState === "loading" ||
+                  !isFieldValid("email") ||
+                  !isFieldValid("firstName") ||
+                  !isFieldValid("lastName")
+                }
               >
                 {formState === "loading" ? (
                   <>

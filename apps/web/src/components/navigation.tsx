@@ -8,6 +8,7 @@ import { Button } from "./ui/button";
 import { AnimatedNumber } from "./animated-number";
 import { cn } from "@/lib/utils";
 import { Boxes } from "lucide-react";
+import { env } from "@/env";
 
 interface GitHubApiResponse {
   stargazers_count: number;
@@ -21,6 +22,9 @@ export function Navigation() {
   const { data: githubData } = useQuery({
     queryKey: ["githubStars"],
     queryFn: async () => {
+      if (env.VITE_ENVIRONMENT === "development") {
+        return Promise.resolve({ stargazers_count: 400 });
+      }
       const response = await fetch(
         `https://api.github.com/repos/${REPOSITORY}`,
         {

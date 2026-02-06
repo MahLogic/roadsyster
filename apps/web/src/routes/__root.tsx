@@ -1,12 +1,6 @@
-import {
-  HeadContent,
-  Scripts,
-  createRootRoute,
-  Outlet,
-} from "@tanstack/react-router";
+import { HeadContent, Scripts, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import appCss from "../styles.css?url";
@@ -15,10 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { createRootRouteWithContext } from "@tanstack/react-router";
 import * as React from "react";
+import { env } from "@/env";
+import { QueryClient } from "@tanstack/react-query";
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
-import { env } from "@/env";
-import { initPostHog } from "@/lib/posthog";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -63,22 +57,18 @@ export const Route = createRootRouteWithContext<{
   component: RootComponent,
 });
 
-const queryClient = new QueryClient();
-
 function RootComponent() {
-  posthog.init(import.meta.env.PUBLIC_POSTHOG_KEY, {
-    api_host: import.meta.env.PUBLIC_POSTHOG_HOST,
-    defaults: "2025-11-30",
-  });
   return (
     <RootDocument>
-      <PostHogProvider client={posthog}>
+      <PostHogProvider
+        apiKey={env.VITE_POSTHOG_KEY}
+        options={{ api_host: env.VITE_POSTHOG_HOST, defaults: "2026-01-30" }}
+      >
         <Outlet /> <Toaster position="top-center" richColors />
       </PostHogProvider>
     </RootDocument>
   );
 }
-
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
@@ -87,8 +77,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
-        <Analytics />
-        <SpeedInsights />
         <TanStackDevtools
           config={{
             position: "bottom-right",
