@@ -27,8 +27,7 @@ export const Route = createRootRouteWithContext<{
       { title: "RoadSyster - Your Co-Pilot on the Freelance Road" },
       {
         name: "description",
-        content:
-          "Stop juggling spreadsheets and scattered tools. RoadSyster is an open-source CRM for freelancers to manage clients, projects, invoices & finances in one place.",
+        content: "Stop Being Busy. Start Being Profitable.",
       },
       {
         property: "og:image",
@@ -41,24 +40,6 @@ export const Route = createRootRouteWithContext<{
       {
         property: "og:type",
         content: "website",
-      },
-
-      {
-        property: "twitter:card",
-        content: "summary_large_image",
-      },
-      {
-        property: "twitter:title",
-        content: "RoadSyster - Your Co-Pilot on the Freelance Road",
-      },
-      {
-        property: "twitter:description",
-        content:
-          "Stop juggling spreadsheets and scattered tools. RoadSyster is an open-source CRM for freelancers to manage clients, projects, invoices & finances in one place.",
-      },
-      {
-        property: "twitter:image",
-        content: "https://roadsyster.co.za/preview-image.png",
       },
     ],
     links: [
@@ -104,6 +85,19 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <html lang="en" className="dark">
       <head>
         <HeadContent />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:title"
+          content="RoadSyster - Your Co-Pilot on the Freelance Road"
+        />
+        <meta
+          name="twitter:description"
+          content="Stop Being Busy. Start Being Profitable."
+        />
+        <meta
+          name="twitter:image"
+          content="https://roadsyster.co.za/preview-image.png"
+        />
       </head>
       <body>
         {children}
