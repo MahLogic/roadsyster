@@ -40,7 +40,7 @@ import {
 import { Globe } from "feather-icons-react";
 import { Navigation } from "@/components/navigation";
 
-export const Route = createFileRoute("/contributors")({
+export const Route = createFileRoute("/(info)/contributors")({
   component: RouteComponent,
 });
 

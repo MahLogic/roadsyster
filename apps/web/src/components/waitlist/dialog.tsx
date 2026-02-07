@@ -41,6 +41,7 @@ import { trackWaitlistSignup } from "@/lib/posthog";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { usePostHog } from "posthog-js/react";
+import { AnimatedNumber } from "../animated-number";
 
 interface WaitlistDialogProps {
   children: React.ReactNode;
@@ -159,11 +160,16 @@ function WaitlistDialog({ children }: WaitlistDialogProps) {
                   : "Get early access"}
             </DialogTitle>
             <DialogDescription className="sm:text-center">
-              {formState === "success"
-                ? "We'll reach out with updates."
-                : formState === "error"
-                  ? "Please try again in a moment."
-                  : "Built for freelancers and solo consultants."}
+              {formState === "success" ? (
+                "We'll reach out with updates."
+              ) : formState === "error" ? (
+                "Please try again in a moment."
+              ) : (
+                <>
+                  Wait With <AnimatedNumber value={400} /> other freelancers and
+                  solo consultants.
+                </>
+              )}
             </DialogDescription>
           </DialogHeader>
         </div>

@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/whatsapp")({
+export const Route = createFileRoute("/(info)/whatsapp")({
   head: () => ({
     meta: [
       { title: "Share RoadSyster" },

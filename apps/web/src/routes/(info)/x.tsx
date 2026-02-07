@@ -1,9 +1,9 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/zaio")({
+export const Route = createFileRoute("/(info)/x")({
   loader: () => {
     throw redirect({
-      href: "https://applications.zaio.io/?referral=AWWRF4",
+      href: "https://x.com/mahlogic137",
       code: 308,
     });
   },

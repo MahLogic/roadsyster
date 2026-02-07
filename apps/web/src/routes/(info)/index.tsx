@@ -16,7 +16,7 @@ import { WaitlistDialog } from "@/components/waitlist/dialog";
 import { Navigation } from "@/components/navigation";
 import { Boxes } from "lucide-react";
 
-export const Route = createFileRoute("/")({ component: App });
+export const Route = createFileRoute("/(info)/")({ component: App });
 
 function App() {
   return (

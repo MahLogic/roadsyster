@@ -1,4 +1,4 @@
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
 
 export const add = mutation({
@@ -38,4 +38,9 @@ export const add = mutation({
       throw new ConvexError("INTERNAL_ERROR");
     }
   },
+});
+
+export const count = query(async (ctx) => {
+  const count = (await ctx.db.query("waitlist").collect()).length;
+  return count;
 });

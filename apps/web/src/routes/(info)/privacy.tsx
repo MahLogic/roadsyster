@@ -13,7 +13,7 @@ import {
 } from "feather-icons-react";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/privacy")({
+export const Route = createFileRoute("/(info)/privacy")({
   head: () => ({
     meta: [
       { title: "Privacy Policy" },

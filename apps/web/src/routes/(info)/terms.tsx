@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 
 const LAST_UPDATED = "February 13, 2025";
 
-export const Route = createFileRoute("/terms")({
+export const Route = createFileRoute("/(info)/terms")({
   head: () => ({
     meta: [
       { title: "Terms of Service" },

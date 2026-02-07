@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/github")({
+export const Route = createFileRoute("/(info)/github")({
   head: () => ({
     meta: [
       { title: "GitHub" },

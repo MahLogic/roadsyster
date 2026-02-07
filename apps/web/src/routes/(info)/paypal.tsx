@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/paypal")({
+export const Route = createFileRoute("/(info)/paypal")({
   head: () => ({
     meta: [
       { title: "Donate" },

@@ -22,9 +22,6 @@ export function Navigation() {
   const { data: githubData } = useQuery({
     queryKey: ["githubStars"],
     queryFn: async () => {
-      if (env.VITE_ENVIRONMENT === "development") {
-        return Promise.resolve({ stargazers_count: 400 });
-      }
       const response = await fetch(
         `https://api.github.com/repos/${REPOSITORY}`,
         {

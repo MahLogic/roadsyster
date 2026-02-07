@@ -9,109 +9,108 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ZaioRouteImport } from './routes/zaio'
-import { Route as XRouteImport } from './routes/x'
-import { Route as WhatsappRouteImport } from './routes/whatsapp'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as PaypalRouteImport } from './routes/paypal'
-import { Route as GithubRouteImport } from './routes/github'
-import { Route as ContributorsRouteImport } from './routes/contributors'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as infoIndexRouteImport } from './routes/(info)/index'
+import { Route as infoZaioRouteImport } from './routes/(info)/zaio'
+import { Route as infoXRouteImport } from './routes/(info)/x'
+import { Route as infoWhatsappRouteImport } from './routes/(info)/whatsapp'
+import { Route as infoTermsRouteImport } from './routes/(info)/terms'
+import { Route as infoPrivacyRouteImport } from './routes/(info)/privacy'
+import { Route as infoPaypalRouteImport } from './routes/(info)/paypal'
+import { Route as infoGithubRouteImport } from './routes/(info)/github'
+import { Route as infoContributorsRouteImport } from './routes/(info)/contributors'
+import { Route as infoAboutRouteImport } from './routes/(info)/about'
 
-const ZaioRoute = ZaioRouteImport.update({
-  id: '/zaio',
+const infoIndexRoute = infoIndexRouteImport.update({
+  id: '/(info)/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const infoZaioRoute = infoZaioRouteImport.update({
+  id: '/(info)/zaio',
   path: '/zaio',
   getParentRoute: () => rootRouteImport,
 } as any)
-const XRoute = XRouteImport.update({
-  id: '/x',
+const infoXRoute = infoXRouteImport.update({
+  id: '/(info)/x',
   path: '/x',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WhatsappRoute = WhatsappRouteImport.update({
-  id: '/whatsapp',
+const infoWhatsappRoute = infoWhatsappRouteImport.update({
+  id: '/(info)/whatsapp',
   path: '/whatsapp',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
+const infoTermsRoute = infoTermsRouteImport.update({
+  id: '/(info)/terms',
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
+const infoPrivacyRoute = infoPrivacyRouteImport.update({
+  id: '/(info)/privacy',
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PaypalRoute = PaypalRouteImport.update({
-  id: '/paypal',
+const infoPaypalRoute = infoPaypalRouteImport.update({
+  id: '/(info)/paypal',
   path: '/paypal',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GithubRoute = GithubRouteImport.update({
-  id: '/github',
+const infoGithubRoute = infoGithubRouteImport.update({
+  id: '/(info)/github',
   path: '/github',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ContributorsRoute = ContributorsRouteImport.update({
-  id: '/contributors',
+const infoContributorsRoute = infoContributorsRouteImport.update({
+  id: '/(info)/contributors',
   path: '/contributors',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
+const infoAboutRoute = infoAboutRouteImport.update({
+  id: '/(info)/about',
   path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/contributors': typeof ContributorsRoute
-  '/github': typeof GithubRoute
-  '/paypal': typeof PaypalRoute
-  '/privacy': typeof PrivacyRoute
-  '/terms': typeof TermsRoute
-  '/whatsapp': typeof WhatsappRoute
-  '/x': typeof XRoute
-  '/zaio': typeof ZaioRoute
+  '/about': typeof infoAboutRoute
+  '/contributors': typeof infoContributorsRoute
+  '/github': typeof infoGithubRoute
+  '/paypal': typeof infoPaypalRoute
+  '/privacy': typeof infoPrivacyRoute
+  '/terms': typeof infoTermsRoute
+  '/whatsapp': typeof infoWhatsappRoute
+  '/x': typeof infoXRoute
+  '/zaio': typeof infoZaioRoute
+  '/': typeof infoIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/contributors': typeof ContributorsRoute
-  '/github': typeof GithubRoute
-  '/paypal': typeof PaypalRoute
-  '/privacy': typeof PrivacyRoute
-  '/terms': typeof TermsRoute
-  '/whatsapp': typeof WhatsappRoute
-  '/x': typeof XRoute
-  '/zaio': typeof ZaioRoute
+  '/about': typeof infoAboutRoute
+  '/contributors': typeof infoContributorsRoute
+  '/github': typeof infoGithubRoute
+  '/paypal': typeof infoPaypalRoute
+  '/privacy': typeof infoPrivacyRoute
+  '/terms': typeof infoTermsRoute
+  '/whatsapp': typeof infoWhatsappRoute
+  '/x': typeof infoXRoute
+  '/zaio': typeof infoZaioRoute
+  '/': typeof infoIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/contributors': typeof ContributorsRoute
-  '/github': typeof GithubRoute
-  '/paypal': typeof PaypalRoute
-  '/privacy': typeof PrivacyRoute
-  '/terms': typeof TermsRoute
-  '/whatsapp': typeof WhatsappRoute
-  '/x': typeof XRoute
-  '/zaio': typeof ZaioRoute
+  '/(info)/about': typeof infoAboutRoute
+  '/(info)/contributors': typeof infoContributorsRoute
+  '/(info)/github': typeof infoGithubRoute
+  '/(info)/paypal': typeof infoPaypalRoute
+  '/(info)/privacy': typeof infoPrivacyRoute
+  '/(info)/terms': typeof infoTermsRoute
+  '/(info)/whatsapp': typeof infoWhatsappRoute
+  '/(info)/x': typeof infoXRoute
+  '/(info)/zaio': typeof infoZaioRoute
+  '/(info)/': typeof infoIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | '/about'
     | '/contributors'
     | '/github'
@@ -121,9 +120,9 @@ export interface FileRouteTypes {
     | '/whatsapp'
     | '/x'
     | '/zaio'
+    | '/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/about'
     | '/contributors'
     | '/github'
@@ -133,119 +132,120 @@ export interface FileRouteTypes {
     | '/whatsapp'
     | '/x'
     | '/zaio'
+    | '/'
   id:
     | '__root__'
-    | '/'
-    | '/about'
-    | '/contributors'
-    | '/github'
-    | '/paypal'
-    | '/privacy'
-    | '/terms'
-    | '/whatsapp'
-    | '/x'
-    | '/zaio'
+    | '/(info)/about'
+    | '/(info)/contributors'
+    | '/(info)/github'
+    | '/(info)/paypal'
+    | '/(info)/privacy'
+    | '/(info)/terms'
+    | '/(info)/whatsapp'
+    | '/(info)/x'
+    | '/(info)/zaio'
+    | '/(info)/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
-  ContributorsRoute: typeof ContributorsRoute
-  GithubRoute: typeof GithubRoute
-  PaypalRoute: typeof PaypalRoute
-  PrivacyRoute: typeof PrivacyRoute
-  TermsRoute: typeof TermsRoute
-  WhatsappRoute: typeof WhatsappRoute
-  XRoute: typeof XRoute
-  ZaioRoute: typeof ZaioRoute
+  infoAboutRoute: typeof infoAboutRoute
+  infoContributorsRoute: typeof infoContributorsRoute
+  infoGithubRoute: typeof infoGithubRoute
+  infoPaypalRoute: typeof infoPaypalRoute
+  infoPrivacyRoute: typeof infoPrivacyRoute
+  infoTermsRoute: typeof infoTermsRoute
+  infoWhatsappRoute: typeof infoWhatsappRoute
+  infoXRoute: typeof infoXRoute
+  infoZaioRoute: typeof infoZaioRoute
+  infoIndexRoute: typeof infoIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/zaio': {
-      id: '/zaio'
-      path: '/zaio'
-      fullPath: '/zaio'
-      preLoaderRoute: typeof ZaioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/x': {
-      id: '/x'
-      path: '/x'
-      fullPath: '/x'
-      preLoaderRoute: typeof XRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/whatsapp': {
-      id: '/whatsapp'
-      path: '/whatsapp'
-      fullPath: '/whatsapp'
-      preLoaderRoute: typeof WhatsappRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/paypal': {
-      id: '/paypal'
-      path: '/paypal'
-      fullPath: '/paypal'
-      preLoaderRoute: typeof PaypalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/github': {
-      id: '/github'
-      path: '/github'
-      fullPath: '/github'
-      preLoaderRoute: typeof GithubRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contributors': {
-      id: '/contributors'
-      path: '/contributors'
-      fullPath: '/contributors'
-      preLoaderRoute: typeof ContributorsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
+    '/(info)/': {
+      id: '/(info)/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof infoIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(info)/zaio': {
+      id: '/(info)/zaio'
+      path: '/zaio'
+      fullPath: '/zaio'
+      preLoaderRoute: typeof infoZaioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(info)/x': {
+      id: '/(info)/x'
+      path: '/x'
+      fullPath: '/x'
+      preLoaderRoute: typeof infoXRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(info)/whatsapp': {
+      id: '/(info)/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/whatsapp'
+      preLoaderRoute: typeof infoWhatsappRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(info)/terms': {
+      id: '/(info)/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof infoTermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(info)/privacy': {
+      id: '/(info)/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof infoPrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(info)/paypal': {
+      id: '/(info)/paypal'
+      path: '/paypal'
+      fullPath: '/paypal'
+      preLoaderRoute: typeof infoPaypalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(info)/github': {
+      id: '/(info)/github'
+      path: '/github'
+      fullPath: '/github'
+      preLoaderRoute: typeof infoGithubRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(info)/contributors': {
+      id: '/(info)/contributors'
+      path: '/contributors'
+      fullPath: '/contributors'
+      preLoaderRoute: typeof infoContributorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(info)/about': {
+      id: '/(info)/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof infoAboutRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
-  ContributorsRoute: ContributorsRoute,
-  GithubRoute: GithubRoute,
-  PaypalRoute: PaypalRoute,
-  PrivacyRoute: PrivacyRoute,
-  TermsRoute: TermsRoute,
-  WhatsappRoute: WhatsappRoute,
-  XRoute: XRoute,
-  ZaioRoute: ZaioRoute,
+  infoAboutRoute: infoAboutRoute,
+  infoContributorsRoute: infoContributorsRoute,
+  infoGithubRoute: infoGithubRoute,
+  infoPaypalRoute: infoPaypalRoute,
+  infoPrivacyRoute: infoPrivacyRoute,
+  infoTermsRoute: infoTermsRoute,
+  infoWhatsappRoute: infoWhatsappRoute,
+  infoXRoute: infoXRoute,
+  infoZaioRoute: infoZaioRoute,
+  infoIndexRoute: infoIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
